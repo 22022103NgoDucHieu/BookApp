@@ -69,6 +69,15 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Retrofit core
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // Gson converter
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // (Tùy chọn) OkHttp Logging Interceptor - giúp dễ dàng debug network
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
     val nav_version = "2.8.9"
 
     // Jetpack Compose integration

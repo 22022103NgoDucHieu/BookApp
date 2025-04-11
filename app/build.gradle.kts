@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.google.gms.google.services)
     kotlin("plugin.serialization") version "2.0.21"
+    id("kotlin-parcelize")
 }
 
 android {
@@ -68,6 +69,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //Picasso
+    implementation ("com.squareup.picasso:picasso:2.8")
 
     // Retrofit core
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

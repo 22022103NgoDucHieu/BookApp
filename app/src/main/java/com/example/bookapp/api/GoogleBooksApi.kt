@@ -13,7 +13,8 @@ interface GoogleBooksApi {
     fun searchBooks(
         @Query("q") query: String,
         @Query("key") apiKey: String,
-        @Query("maxResults") maxResults: Int = 10
+        @Query("maxResults") maxResults: Int = 20, // Đặt mặc định là 20
+        @Query("startIndex") startIndex: Int = 0  // Thêm startIndex
     ): Call<GoogleBooksResponse>
 
     @GET("volumes/{bookId}")

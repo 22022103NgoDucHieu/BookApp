@@ -31,6 +31,8 @@ import retrofit2.Response
 
 import com.example.bookapp.api.GoogleBooksResponse
 import com.example.bookapp.api.BookItem
+import com.example.bookapp.utils.adapter.BookAdapter
+import com.example.bookapp.utils.model.Book
 
 
 class HomeFragment : Fragment(), ToDoDialogFragment.OnDialogNextBtnClickListener,
@@ -46,6 +48,8 @@ class HomeFragment : Fragment(), ToDoDialogFragment.OnDialogNextBtnClickListener
 
     private lateinit var taskAdapter: TaskAdapter
     private lateinit var toDoItemList: MutableList<ToDoData>
+    private lateinit var bookAdapter: BookAdapter
+    private val bookList: MutableList<Book> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,8 +65,9 @@ class HomeFragment : Fragment(), ToDoDialogFragment.OnDialogNextBtnClickListener
         init(view) // Truyền view để khởi tạo navController
 
         // Lấy dữ liệu sách từ Google Books API và đẩy lên Firebase
-        fetchBooksFromGoogleBooks()
+        //fetchBooksFromGoogleBooks()
 
+        fetchBooksFromFirebase()
         getTaskFromFirebase()
 
         binding.addTaskBtn.setOnClickListener {
@@ -80,61 +85,156 @@ class HomeFragment : Fragment(), ToDoDialogFragment.OnDialogNextBtnClickListener
         }
     }
 
-    private fun fetchBooksFromGoogleBooks() {
-        val api = RetrofitClient.api
-        api.searchBooks("popular books", RetrofitClient.API_KEY).enqueue(object :
-            Callback<GoogleBooksResponse> {
-            override fun onResponse(
-                call: Call<GoogleBooksResponse>,
-                response: Response<GoogleBooksResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val books = response.body()?.items ?: emptyList()
-                    for (book in books) {
-                        saveBookToFirebase(book)
+    //top book
+    private fun fetchBooksFromFirebase() {
+        val booksRef = FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app")
+            .reference.child("books")
+
+        booksRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                bookList.clear()
+                for (bookSnapshot in snapshot.children) {
+                    try {
+                        val book = bookSnapshot.getValue(Book::class.java)?.copy(id = bookSnapshot.key ?: "")
+                        book?.let {
+                            if (bookList.size < 10) {
+                                bookList.add(it)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error parsing book ${bookSnapshot.key}: ${e.message}")
                     }
-                    Toast.makeText(context, "Fetched ${books.size} books", Toast.LENGTH_SHORT).show()
+                    if (bookList.size == 10) break
+                }
+                if (bookList.isNotEmpty()) {
+                    bookAdapter.notifyDataSetChanged()
+                    Log.d(TAG, "Loaded ${bookList.size} books from Firebase")
                 } else {
-                    Log.e(TAG, "API error: ${response.code()} - ${response.message()}")
+                    Toast.makeText(context, "No books found in Firebase", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onFailure(call: Call<GoogleBooksResponse>, t: Throwable) {
-                Log.e(TAG, "API call failed: ${t.message}")
-                Toast.makeText(context, "Failed to fetch books: ${t.message}", Toast.LENGTH_SHORT).show()
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "Failed to fetch books from Firebase: ${error.message}")
+                Toast.makeText(context, "Failed to fetch books: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    private fun saveBookToFirebase(book: BookItem) {
-        val bookId = book.id
-        val volumeInfo = book.volumeInfo
-
-        val bookData = mapOf(
-            "title" to (volumeInfo.title ?: "Unknown Title"),
-            "titleLowercase" to (volumeInfo.title?.toLowerCase() ?: "unknown title"),
-            "authors" to (volumeInfo.authors ?: emptyList<String>()),
-            "publisher" to (volumeInfo.publisher ?: "Unknown Publisher"),
-            "publishedDate" to (volumeInfo.publishedDate ?: ""),
-            "description" to (volumeInfo.description ?: ""),
-            "categories" to (volumeInfo.categories ?: emptyList<String>()),
-            "thumbnail" to (volumeInfo.imageLinks?.thumbnail ?: ""),
-            "googleBooksLink" to "https://books.google.com/books?id=$bookId",
-            "purchaseLinks" to mapOf("amazon" to "https://amazon.com/$bookId"), // Mock link
-            "averageRating" to (volumeInfo.averageRating ?: 0.0),
-            "ratingCount" to (volumeInfo.ratingsCount ?: 0),
-            "readCount" to 0 // Khởi tạo
-        )
-
-        // Đẩy dữ liệu lên Firebase Realtime Database
-        database.child("books").child(bookId).setValue(bookData)
-            .addOnSuccessListener {
-                Log.d(TAG, "Saved book: $bookId")
+    private fun setupBookRecyclerView() {
+        bookAdapter = BookAdapter(bookList) { book ->
+            val bundle = Bundle().apply {
+                putParcelable("book", book)
             }
-            .addOnFailureListener { e ->
-                Log.e(TAG, "Failed to save book $bookId: ${e.message}")
-            }
+            navController.navigate(R.id.action_homeFragment_to_bookDetailFragment, bundle)
+        }
+        binding.booksRecyclerView.apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = bookAdapter
+        }
     }
+
+//    private fun fetchBooksFromGoogleBooks() {
+//        val api = RetrofitClient.api
+//        api.searchBooks("popular books", RetrofitClient.API_KEY).enqueue(object :
+//            Callback<GoogleBooksResponse> {
+//            override fun onResponse(
+//                call: Call<GoogleBooksResponse>,
+//                response: Response<GoogleBooksResponse>
+//            ) {
+//                if (response.isSuccessful) {
+//                    val books = response.body()?.items ?: emptyList()
+//                    for (book in books) {
+//                        saveBookToFirebase(book)
+//                    }
+//                    Toast.makeText(context, "Fetched ${books.size} books", Toast.LENGTH_SHORT).show()
+//                } else {
+//                    Log.e(TAG, "API error: ${response.code()} - ${response.message()}")
+//                }
+//            }
+//
+//            override fun onFailure(call: Call<GoogleBooksResponse>, t: Throwable) {
+//                Log.e(TAG, "API call failed: ${t.message}")
+//                Toast.makeText(context, "Failed to fetch books: ${t.message}", Toast.LENGTH_SHORT).show()
+//            }
+//        })
+//    }
+
+//    private fun fetchBooksFromGoogleBooks() {
+//        val api = RetrofitClient.api
+//        val categories = listOf(
+//            "Fiction", "Nonfiction", "Computers", "Economics", "Health",
+//            "Medical", "Science", "Self-Help", "Art", "Novel"
+//        )
+//        val booksPerCategory = 10
+//        var totalBooksFetched = 0
+//
+//        for (category in categories) {
+//            api.searchBooks(
+//                category,              // Truy vấn theo thể loại
+//                RetrofitClient.API_KEY,
+//                booksPerCategory,      // Lấy 10 sách mỗi thể loại
+//                0                      // Bắt đầu từ 0
+//            ).enqueue(object : Callback<GoogleBooksResponse> {
+//                override fun onResponse(
+//                    call: Call<GoogleBooksResponse>,
+//                    response: Response<GoogleBooksResponse>
+//                ) {
+//                    if (response.isSuccessful) {
+//                        val books = response.body()?.items ?: emptyList()
+//                        for (book in books) {
+//                            saveBookToFirebase(book, category) // Truyền category để lưu đúng node
+//                        }
+//                        totalBooksFetched += books.size
+//                        if (totalBooksFetched >= categories.size * booksPerCategory) {
+//                            Toast.makeText(context, "Fetched $totalBooksFetched books across all categories", Toast.LENGTH_SHORT).show()
+//                        }
+//                    } else {
+//                        Log.e(TAG, "API error for $category: ${response.code()} - ${response.message()}")
+//                    }
+//                }
+//
+//                override fun onFailure(call: Call<GoogleBooksResponse>, t: Throwable) {
+//                    Log.e(TAG, "API call failed for $category: ${t.message}")
+//                    Toast.makeText(context, "Failed to fetch books for $category: ${t.message}", Toast.LENGTH_SHORT).show()
+//                }
+//            })
+//        }
+//    }
+//
+//    private fun saveBookToFirebase(book: BookItem, category: String) {
+//        val bookId = book.id
+//        val volumeInfo = book.volumeInfo
+//
+//        val bookData = mapOf(
+//            "title" to (volumeInfo.title ?: "Unknown Title"),
+//            "titleLowercase" to (volumeInfo.title?.toLowerCase() ?: "unknown title"),
+//            "authors" to (volumeInfo.authors ?: emptyList<String>()),
+//            "publisher" to (volumeInfo.publisher ?: "Unknown Publisher"),
+//            "publishedDate" to (volumeInfo.publishedDate ?: ""),
+//            "description" to (volumeInfo.description ?: ""),
+//            "categories" to (volumeInfo.categories ?: emptyList<String>()),
+//            "thumbnail" to (volumeInfo.imageLinks?.thumbnail ?: ""),
+//            "googleBooksLink" to "https://books.google.com/books?id=$bookId",
+//            "purchaseLinks" to mapOf("amazon" to "https://amazon.com/$bookId"),
+//            "averageRating" to (volumeInfo.averageRating ?: 0.0),
+//            "ratingCount" to (volumeInfo.ratingsCount ?: 0),
+//            "readCount" to 0 // Khởi tạo
+//        )
+//
+//        // Tạo tham chiếu cho categories/<category>
+//        val booksRef = FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app")
+//            .reference.child("categories").child(category)
+//
+//        booksRef.child(bookId).setValue(bookData)
+//            .addOnSuccessListener {
+//                Log.d(TAG, "Saved book $bookId to $category")
+//            }
+//            .addOnFailureListener { e ->
+//                Log.e(TAG, "Failed to save book $bookId to $category: ${e.message}")
+//            }
+//    }
+
 
     private fun getTaskFromFirebase() {
         database.addValueEventListener(object : ValueEventListener {
@@ -167,6 +267,9 @@ class HomeFragment : Fragment(), ToDoDialogFragment.OnDialogNextBtnClickListener
         taskAdapter = TaskAdapter(toDoItemList)
         taskAdapter.setListener(this)
         binding.mainRecyclerView.adapter = taskAdapter
+
+        // Khởi tạo RecyclerView cho books ngay từ đầu với danh sách rỗng
+        setupBookRecyclerView()
     }
 
     override fun saveTask(todoTask: String, todoEdit: TextInputEditText) {

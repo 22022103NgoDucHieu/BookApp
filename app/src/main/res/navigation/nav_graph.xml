@@ -66,7 +66,12 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_homeFragment_to_bookDetailFragment"
-            app:destination="@id/signInFragment" />
+            app:destination="@id/bookDetailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/bookDetailFragment"
+        android:name="com.example.bookapp.fragments.BookDetailFragment"
+        android:label="fragment_book_detail">
     </fragment>
 
 </navigation>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <!-- Ảnh bìa sách -->
+        <ImageView
+            android:id="@+id/bookThumbnail"
+            android:layout_width="120dp"
+            android:layout_height="180dp"
+            android:scaleType="centerCrop"
+            android:contentDescription="Book Thumbnail"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Tiêu đề sách (không có chú thích) -->
+        <TextView
+            android:id="@+id/bookTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:text="Book Title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/bookThumbnail"
+            app:layout_constraintTop_toTopOf="@id/bookThumbnail" />
+
+        <!-- Danh sách thông tin dạng bullet points -->
+        <!-- Tác giả -->
+        <TextView
+            android:id="@+id/bookAuthors"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="14sp"
+            android:text="\u2022 Tác giả: Authors"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/bookTitle"
+            app:layout_constraintTop_toBottomOf="@id/bookTitle" />
+
+        <!-- Nhà xuất bản -->
+        <TextView
+            android:id="@+id/bookPublisher"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:text="\u2022 Nhà xuất bản: Publisher"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/bookAuthors"
+            app:layout_constraintTop_toBottomOf="@id/bookAuthors" />
+
+        <!-- Ngày xuất bản -->
+        <TextView
+            android:id="@+id/bookPublishedDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:text="\u2022 Ngày xuất bản: Published Date"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/bookPublisher"
+            app:layout_constraintTop_toBottomOf="@id/bookPublisher" />
+
+        <!-- Thể loại -->
+        <TextView
+            android:id="@+id/bookCategories"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:text="\u2022 Thể loại: Categories"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/bookPublishedDate"
+            app:layout_constraintTop_toBottomOf="@id/bookPublishedDate" />
+
+        <!-- Số lần đọc -->
+        <TextView
+            android:id="@+id/bookReadCount"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:text="\u2022 Số lần đọc: Read Count"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/bookCategories"
+            app:layout_constraintTop_toBottomOf="@id/bookCategories" />
+
+        <!-- Xếp hạng (RatingBar + Rating Count, không có label) -->
+        <RatingBar
+            android:id="@+id/bookAverageRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="0dp"
+            android:layout_marginTop="4dp"
+            android:numStars="5"
+            android:stepSize="0.1"
+            android:isIndicator="true"
+            app:layout_constraintStart_toStartOf="@id/bookReadCount"
+            app:layout_constraintTop_toBottomOf="@id/bookReadCount" />
+
+        <TextView
+            android:id="@+id/bookRatingCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textSize="14sp"
+            android:text="Rating Count"
+            app:layout_constraintStart_toEndOf="@id/bookAverageRating"
+            app:layout_constraintTop_toTopOf="@id/bookAverageRating"
+            app:layout_constraintBottom_toBottomOf="@id/bookAverageRating" />
+
+        <!-- Nút Google Books Link (Icon con mắt) -->
+        <Button
+            android:id="@+id/bookGoogleBooksButton"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Read"
+            android:drawableStart="@drawable/ic_eye"
+            android:padding="5dp"
+            android:backgroundTint="@android:color/holo_blue_light"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bookThumbnail" />
+
+        <!-- Nút Purchase Link (Icon xe hàng) -->
+        <Button
+            android:id="@+id/bookPurchaseButton"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="8dp"
+            android:text="Buy"
+            android:drawableStart="@drawable/ic_shopping_cart"
+            android:padding="5dp"
+            android:backgroundTint="@android:color/holo_green_light"
+            app:layout_constraintStart_toEndOf="@id/bookGoogleBooksButton"
+            app:layout_constraintTop_toBottomOf="@id/bookThumbnail" />
+
+        <!-- Mô tả -->
+        <TextView
+            android:id="@+id/bookDescription"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="14sp"
+            android:text="Description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/bookGoogleBooksButton" />
+
+        <!-- Nút "Xem thêm" cho mô tả -->
+        <Button
+            android:id="@+id/expandDescriptionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Xem thêm"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="@id/bookDescription"
+            app:layout_constraintTop_toBottomOf="@id/bookDescription" />
+
+        <!-- Tiêu đề phần đánh giá -->
+        <TextView
+            android:id="@+id/reviewsTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Đánh giá người dùng"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/expandDescriptionButton" />
+
+        <!-- Phần nhập đánh giá -->
+        <LinearLayout
+            android:id="@+id/reviewInputContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/reviewsTitle">
+
+            <RatingBar
+                android:id="@+id/userRatingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:stepSize="0.5"
+                android:rating="0" />
+
+            <EditText
+                android:id="@+id/userCommentInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hint="Viết bình luận của bạn..."
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:maxLines="5"
+                android:background="@android:drawable/edit_text" />
+
+            <Button
+                android:id="@+id/submitReviewButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginTop="8dp"
+                android:text="Gửi"
+                android:backgroundTint="@android:color/holo_blue_light" />
+        </LinearLayout>
+
+        <!-- LinearLayout chứa danh sách đánh giá -->
+        <LinearLayout
+            android:id="@+id/reviewsContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/reviewInputContainer" />
+
+        <!-- Nút "Xem thêm" cho đánh giá -->
+        <Button
+            android:id="@+id/expandReviewsButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Xem thêm"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/reviewsContainer" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

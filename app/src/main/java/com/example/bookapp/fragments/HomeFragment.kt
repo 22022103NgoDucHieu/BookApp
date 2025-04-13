@@ -51,6 +51,7 @@ class HomeFragment : Fragment(), ToDoDialogFragment.OnDialogNextBtnClickListener
     private lateinit var bookAdapter: BookAdapter
     private val bookList: MutableList<Book> = mutableListOf()
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

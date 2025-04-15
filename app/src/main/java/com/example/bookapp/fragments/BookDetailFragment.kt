@@ -16,6 +16,7 @@ import com.example.bookapp.R
 import com.example.bookapp.databinding.FragmentBookDetailBinding
 import com.example.bookapp.utils.model.Book
 import com.example.bookapp.utils.model.Review
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.squareup.picasso.Picasso
@@ -28,6 +29,7 @@ class BookDetailFragment : Fragment() {
     private var isDescriptionExpanded = false
     private var isReviewsExpanded = false
     private lateinit var database: DatabaseReference
+    private lateinit var auth: FirebaseAuth // Thêm FirebaseAuth
 
     private lateinit var allReviews: MutableList<Review>
     private lateinit var bookId: String
@@ -42,6 +44,9 @@ class BookDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Khởi tạo Firebase Authentication
+        auth = FirebaseAuth.getInstance()
 
         // Khởi tạo Firebase Database
         database = FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app").getReference("books")
@@ -107,8 +112,9 @@ class BookDetailFragment : Fragment() {
             }
 
 // Hiển thị đánh giá
-            allReviews = it.reviews.sortedByDescending { review -> review.timestamp }.toMutableList()
-            displayReviews(allReviews.take(3)) // Hiển thị 3 đánh giá mới nhất
+            // Chuyển Map<String, Review> thành List<Review> để hiển thị
+            allReviews = it.reviews.values.sortedByDescending { review -> review.timestamp }.toMutableList()
+            displayReviews(allReviews.take(3))
 
             // Hiển thị nút "Xem thêm" nếu có nhiều hơn 3 đánh giá
             if (allReviews.size > 3) {
@@ -142,9 +148,17 @@ class BookDetailFragment : Fragment() {
                     return@setOnClickListener
                 }
 
+                // Kiểm tra người dùng đã đăng nhập chưa
+                val currentUser = auth.currentUser
+                if (currentUser == null) {
+                    Toast.makeText(context, "Vui lòng đăng nhập để gửi đánh giá!", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
                 // Tạo đánh giá mới
                 val newReview = Review(
-                    userId = "user_${UUID.randomUUID()}", // Giả lập userId (có thể thay bằng ID người dùng thực tế)
+                    userId = currentUser.uid, // Sử dụng uid của người dùng
+//                    userId = "user_${UUID.randomUUID()}", // Giả lập userId (có thể thay bằng ID người dùng thực tế)
                     rating = rating,
                     comment = comment,
                     timestamp = System.currentTimeMillis()

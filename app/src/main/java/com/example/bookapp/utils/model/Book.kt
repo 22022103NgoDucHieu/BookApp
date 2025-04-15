@@ -19,7 +19,7 @@ data class Book(
     val averageRating: Double = 0.0,
     val ratingCount: Long = 0, // Đổi sang Long để khớp với Realtime Database
     val readCount: Long = 0,   // Đổi sang Long để khớp với Realtime Database
-    val reviews: List<Review> = emptyList() // Thêm trường reviews
+    val reviews: Map<String, Review> = emptyMap() // Thay đổi từ List thành Map
 ) : Parcelable
 
 @Parcelize

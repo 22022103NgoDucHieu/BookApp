@@ -1,6 +1,8 @@
 package com.example.bookapp.fragments
 
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
+
 import androidx.fragment.app.Fragment
 import com.example.bookapp.R
 import com.example.bookapp.databinding.FragmentBookDetailBinding
@@ -21,6 +24,7 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.squareup.picasso.Picasso
 import java.util.UUID
+import android.graphics.Typeface
 
 class BookDetailFragment : Fragment() {
 
@@ -133,6 +137,15 @@ class BookDetailFragment : Fragment() {
                 isReviewsExpanded = !isReviewsExpanded
             }
 
+            val rBar = view.findViewById<RatingBar>(R.id.bookAverageRating)
+            rBar.progressTintList = ColorStateList.valueOf(Color.parseColor("#FFD700")) // màu vàng
+            rBar.secondaryProgressTintList = ColorStateList.valueOf(Color.parseColor("#CCCCCC")) // phần chưa chọn
+
+            val rBar1 = view.findViewById<RatingBar>(R.id.userRatingBar)
+            rBar1.progressTintList = ColorStateList.valueOf(Color.parseColor("#FFD700")) // màu vàng
+            rBar1.secondaryProgressTintList = ColorStateList.valueOf(Color.parseColor("#CCCCCC")) // phần chưa chọn
+
+
             // Xử lý nút "Gửi" đánh giá
             binding.submitReviewButton.setOnClickListener {
                 val rating = binding.userRatingBar.rating
@@ -230,9 +243,18 @@ class BookDetailFragment : Fragment() {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
-                    setMargins(0, 8, 0, 8)
+                    setMargins(0, 4, 0, 4)
                 }
                 orientation = LinearLayout.VERTICAL
+            }
+            // Tạo LinearLayout ngang để chứa tên người dùng và RatingBar
+            val userAndRatingLayout = LinearLayout(context).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                orientation = LinearLayout.VERTICAL
+                gravity = android.view.Gravity.CENTER_VERTICAL  // Căn giữa theo chiều dọc
             }
 
             // RatingBar cho số sao
@@ -240,12 +262,60 @@ class BookDetailFragment : Fragment() {
                 layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
-                )
+                ).apply {
+                    setMargins(-20, 0, 0, 0) // ← Dịch sang trái 20dp
+                }
                 numStars = 5
                 stepSize = 0.1f
 //                isIndicator = true
                 rating = review.rating
+                scaleX = 0.5f  // Giảm kích thước ngang xuống 50%
+                scaleY = 0.5f  // Giảm kích thước dọc xuống 50%
+                // Đổi màu ngôi sao thành màu vàng
+                progressTintList = android.content.res.ColorStateList.valueOf(
+                    android.graphics.Color.parseColor("#FFD700") // Màu vàng
+                )
+                secondaryProgressTintList = android.content.res.ColorStateList.valueOf(
+                    android.graphics.Color.parseColor("#CCCCCC") // Màu xám cho phần chưa chọn
+                )
             }
+
+            // Lấy thông tin người dùng từ Firebase
+            val userRef = FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app")
+                .getReference("users").child(review.userId)
+            userRef.get().addOnSuccessListener { snapshot ->
+                val displayName = snapshot.child("displayName").getValue(String::class.java)
+                val email = snapshot.child("email").getValue(String::class.java) ?: "Anonymous"
+
+                // Hiển thị displayName nếu có, nếu không thì hiển thị email
+                val userText = TextView(context).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    text = displayName ?: email
+                    textSize = 16f
+                    setTypeface(null, Typeface.BOLD) // In đậm tên người dùng
+                }
+                userAndRatingLayout.addView(userText)
+                // Thêm RatingBar vào userAndRatingLayout
+                userAndRatingLayout.addView(ratingBar)
+            }.addOnFailureListener { e ->
+                Log.e("BookDetailFragment", "Failed to load user data: ${e.message}")
+                // Hiển thị "Anonymous" nếu không lấy được dữ liệu
+                val userText = TextView(context).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    text = "Anonymous"
+                    textSize = 14f
+                }
+                userAndRatingLayout.addView(userText)
+                // Thêm RatingBar vào userAndRatingLayout
+                userAndRatingLayout.addView(ratingBar)
+            }
+
 
             // TextView cho bình luận
             val commentText = TextView(context).apply {
@@ -253,14 +323,15 @@ class BookDetailFragment : Fragment() {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 ).apply {
-                    setMargins(0, 4, 0, 0)
+                    setMargins(0, 2, 0, 0)
                 }
                 text = review.comment
                 textSize = 14f
             }
 
-            // Thêm RatingBar và Comment vào reviewLayout
-            reviewLayout.addView(ratingBar)
+
+            // Thêm userAndRatingLayout và commentText vào reviewLayout
+            reviewLayout.addView(userAndRatingLayout)
             reviewLayout.addView(commentText)
 
             // Thêm reviewLayout vào reviewsContainer
@@ -344,6 +415,7 @@ class BookDetailFragment : Fragment() {
                 Log.e("BookDetailFragment", "Failed to update averageRating: ${e.message}")
             }
     }
+
 
 
     override fun onDestroyView() {

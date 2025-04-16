@@ -16,8 +16,6 @@ import com.example.bookapp.R
 import com.example.bookapp.api.GoogleBooksApi
 import com.example.bookapp.api.RetrofitClient
 import com.example.bookapp.databinding.FragmentHomeBinding
-import com.example.bookapp.utils.adapter.TaskAdapter
-import com.example.bookapp.utils.model.ToDoData
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
@@ -37,19 +35,16 @@ import com.example.bookapp.utils.adapter.BookAdapter
 import com.example.bookapp.utils.model.Book
 
 
-class HomeFragment : Fragment(), ToDoDialogFragment.OnDialogNextBtnClickListener,
-    TaskAdapter.TaskAdapterInterface {
+class HomeFragment : Fragment() {
 
     private val TAG = "HomeFragment"
     private lateinit var binding: FragmentHomeBinding
     private lateinit var database: DatabaseReference
-    private var frag: ToDoDialogFragment? = null
+
     private lateinit var auth: FirebaseAuth
     private lateinit var authId: String
     private lateinit var navController: NavController // Khai báo navController
 
-    private lateinit var taskAdapter: TaskAdapter
-    private lateinit var toDoItemList: MutableList<ToDoData>
     private lateinit var bookAdapter: BookAdapter
     private val bookList: MutableList<Book> = mutableListOf()
 
@@ -71,15 +66,6 @@ class HomeFragment : Fragment(), ToDoDialogFragment.OnDialogNextBtnClickListener
         //fetchBooksFromGoogleBooks()
 
         fetchBooksFromFirebase()
-        getTaskFromFirebase()
-
-        binding.addTaskBtn.setOnClickListener {
-            if (frag != null)
-                childFragmentManager.beginTransaction().remove(frag!!).commit()
-            frag = ToDoDialogFragment()
-            frag!!.setListener(this)
-            frag!!.show(childFragmentManager, ToDoDialogFragment.TAG)
-        }
 
         // Thêm sự kiện cho nút đăng xuất
         binding.logoutBtn.setOnClickListener {
@@ -258,25 +244,6 @@ class HomeFragment : Fragment(), ToDoDialogFragment.OnDialogNextBtnClickListener
 //            }
 //    }
 
-
-    private fun getTaskFromFirebase() {
-        database.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                toDoItemList.clear()
-                for (taskSnapshot in snapshot.children) {
-                    val todoTask = taskSnapshot.key?.let { ToDoData(it, taskSnapshot.value.toString()) }
-                    todoTask?.let { toDoItemList.add(it) }
-                }
-                Log.d(TAG, "onDataChange: $toDoItemList")
-                taskAdapter.notifyDataSetChanged()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(context, error.message, Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
     private fun init(view: View) {
         auth = FirebaseAuth.getInstance()
         authId = auth.currentUser!!.uid
@@ -286,58 +253,11 @@ class HomeFragment : Fragment(), ToDoDialogFragment.OnDialogNextBtnClickListener
         binding.mainRecyclerView.setHasFixedSize(true)
         binding.mainRecyclerView.layoutManager = LinearLayoutManager(context)
 
-        toDoItemList = mutableListOf()
-        taskAdapter = TaskAdapter(toDoItemList)
-        taskAdapter.setListener(this)
-        binding.mainRecyclerView.adapter = taskAdapter
+
 
         // Khởi tạo RecyclerView cho books ngay từ đầu với danh sách rỗng
         setupBookRecyclerView()
     }
 
-    override fun saveTask(todoTask: String, todoEdit: TextInputEditText) {
-        Log.d(TAG, "saveTask: Task being saved -> $todoTask") // Log để debug
-        database.push().setValue(todoTask).addOnCompleteListener {
-            if (it.isSuccessful) {
-                Toast.makeText(context, "Task Added Successfully", Toast.LENGTH_SHORT).show()
-                todoEdit.text = null
-            } else {
-                Toast.makeText(context, it.exception?.message, Toast.LENGTH_SHORT).show()
-            }
-            frag?.dismiss()
-        }
-    }
-
-    override fun updateTask(toDoData: ToDoData, todoEdit: TextInputEditText) {
-        val map = HashMap<String, Any>()
-        map[toDoData.taskId] = toDoData.task
-        database.updateChildren(map).addOnCompleteListener {
-            if (it.isSuccessful) {
-                Toast.makeText(context, "Updated Successfully", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, it.exception?.message, Toast.LENGTH_SHORT).show()
-            }
-            frag?.dismiss()
-        }
-    }
-
-    override fun onDeleteItemClicked(toDoData: ToDoData, position: Int) {
-        database.child(toDoData.taskId).removeValue().addOnCompleteListener {
-            if (it.isSuccessful) {
-                Toast.makeText(context, "Deleted Successfully", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, it.exception?.message, Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    override fun onEditItemClicked(toDoData: ToDoData, position: Int) {
-        if (frag != null)
-            childFragmentManager.beginTransaction().remove(frag!!).commit()
-
-        frag = ToDoDialogFragment.newInstance(toDoData.taskId, toDoData.task)
-        frag!!.setListener(this)
-        frag!!.show(childFragmentManager, ToDoDialogFragment.TAG)
-    }
 }
 

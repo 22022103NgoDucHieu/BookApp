@@ -73,24 +73,24 @@ class HomeFragment : Fragment() {
             navController.navigate(R.id.action_homeFragment_to_signInFragment)
         }
         // Sự kiện mở profile
-        binding.bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_profile -> {
-                    findNavController().navigate(R.id.action_homeFragment_to_profileFragment)
-                    true
-                }
-                R.id.nav_home -> {
-                    // Không cần chuyển vì đang ở HomeFragment
-                    true
-                }
-                R.id.nav_search -> {
-                    // Nếu có Fragment search thì điều hướng ở đây
-                    // findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
-                    true
-                }
-                else -> false
-            }
-        }
+//        binding.bottomNavigationView.setOnItemSelectedListener { item ->
+//            when (item.itemId) {
+//                R.id.nav_profile -> {
+//                    findNavController().navigate(R.id.action_homeFragment_to_profileFragment)
+//                    true
+//                }
+//                R.id.nav_home -> {
+//                    // Không cần chuyển vì đang ở HomeFragment
+//                    true
+//                }
+//                R.id.nav_search -> {
+//                    // Nếu có Fragment search thì điều hướng ở đây
+//                    // findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
+//                    true
+//                }
+//                else -> false
+//            }
+//        }
 
     }
 
@@ -250,8 +250,6 @@ class HomeFragment : Fragment() {
         database = FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app").reference.child("Tasks").child(authId)
         navController = Navigation.findNavController(view) // Khởi tạo navController
 
-        binding.mainRecyclerView.setHasFixedSize(true)
-        binding.mainRecyclerView.layoutManager = LinearLayoutManager(context)
 
 
 

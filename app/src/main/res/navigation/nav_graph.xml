@@ -67,11 +67,21 @@
         <action
             android:id="@+id/action_homeFragment_to_bookDetailFragment"
             app:destination="@id/bookDetailFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_profileFragment"
+            app:destination="@+id/profileFragment"/>
+
     </fragment>
     <fragment
         android:id="@+id/bookDetailFragment"
         android:name="com.example.bookapp.fragments.BookDetailFragment"
         android:label="fragment_book_detail">
     </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.bookapp.fragments.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+
 
 </navigation>

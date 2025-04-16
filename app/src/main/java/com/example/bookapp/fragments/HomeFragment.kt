@@ -9,6 +9,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
+import androidx.navigation.Navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bookapp.R
 import com.example.bookapp.api.GoogleBooksApi
@@ -70,6 +72,26 @@ class HomeFragment : Fragment() {
             auth.signOut()
             navController.navigate(R.id.action_homeFragment_to_signInFragment)
         }
+        // Sự kiện mở profile
+        binding.bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_profile -> {
+                    findNavController().navigate(R.id.action_homeFragment_to_profileFragment)
+                    true
+                }
+                R.id.nav_home -> {
+                    // Không cần chuyển vì đang ở HomeFragment
+                    true
+                }
+                R.id.nav_search -> {
+                    // Nếu có Fragment search thì điều hướng ở đây
+                    // findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
+                    true
+                }
+                else -> false
+            }
+        }
+
     }
 
     //top book

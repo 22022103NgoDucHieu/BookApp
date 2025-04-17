@@ -29,3 +29,8 @@ data class Review(
     val comment: String = "",
     val timestamp: Long = 0L
 ) : Parcelable
+
+data class Category(
+    val name: String,
+    var isSelected: Boolean = false
+)

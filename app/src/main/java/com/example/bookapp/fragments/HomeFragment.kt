@@ -6,12 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.Navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.bookapp.R
 import com.example.bookapp.api.GoogleBooksApi
 import com.example.bookapp.api.RetrofitClient
@@ -31,8 +34,11 @@ import retrofit2.Response
 
 import com.example.bookapp.api.GoogleBooksResponse
 import com.example.bookapp.api.BookItem
+import com.example.bookapp.utils.GridSpacingItemDecoration
 import com.example.bookapp.utils.adapter.BookAdapter
+import com.example.bookapp.utils.adapter.CategoryAdapter
 import com.example.bookapp.utils.model.Book
+import com.example.bookapp.utils.model.Category
 
 
 class HomeFragment : Fragment() {
@@ -47,6 +53,14 @@ class HomeFragment : Fragment() {
 
     private lateinit var bookAdapter: BookAdapter
     private val bookList: MutableList<Book> = mutableListOf()
+
+    private lateinit var categoryAdapter: CategoryAdapter
+    private val categories: MutableList<Category> = mutableListOf()
+    private lateinit var categoryBooksAdapter: BookAdapter
+    private val categoryBooksList: MutableList<Book> = mutableListOf()
+    private var currentCategory: String? = null
+    private var lastVisibleBook: String? = null
+    private val booksPerPage = 4
 
 
     override fun onCreateView(
@@ -72,26 +86,34 @@ class HomeFragment : Fragment() {
             auth.signOut()
             navController.navigate(R.id.action_homeFragment_to_signInFragment)
         }
-        // Sự kiện mở profile
-//        binding.bottomNavigationView.setOnItemSelectedListener { item ->
-//            when (item.itemId) {
-//                R.id.nav_profile -> {
-//                    findNavController().navigate(R.id.action_homeFragment_to_profileFragment)
-//                    true
-//                }
-//                R.id.nav_home -> {
-//                    // Không cần chuyển vì đang ở HomeFragment
-//                    true
-//                }
-//                R.id.nav_search -> {
-//                    // Nếu có Fragment search thì điều hướng ở đây
-//                    // findNavController().navigate(R.id.action_homeFragment_to_searchFragment)
-//                    true
-//                }
-//                else -> false
-//            }
-//        }
+        // Thêm listener để thay đổi màu nền của topBooksTitle khi cuộn RecyclerView
+        binding.booksRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                // Nếu có cuộn ngang (dx != 0), đổi màu nền của topBooksTitle
+                if (dx != 0) {
+                    binding.topBooksTitle.setBackgroundColor(
+                        ContextCompat.getColor(requireContext(), R.color.purple_200) // Màu tím nhạt
+                    )
+                } else {
+                    // Nếu không cuộn, đặt lại màu nền ban đầu
+                    binding.topBooksTitle.setBackgroundColor(
+                        ContextCompat.getColor(requireContext(), android.R.color.white)
+                    )
+                }
+            }
+        })
 
+        // Thiết lập danh sách thể loại
+        setupCategoriesRecyclerView()
+
+        // Thiết lập RecyclerView cho sách theo thể loại
+        setupCategoryBooksRecyclerView()
+
+        // Sự kiện nhấn nút "Xem thêm"
+        binding.loadMoreBtn.setOnClickListener {
+            fetchMoreBooksByCategory()
+        }
     }
 
     //top book
@@ -141,6 +163,124 @@ class HomeFragment : Fragment() {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = bookAdapter
         }
+    }
+
+    // Thiết lập RecyclerView cho danh sách thể loại
+    private fun setupCategoriesRecyclerView() {
+        // Danh sách thể loại
+        val categoryNames = listOf(
+            "Fiction", "Nonfiction", "Computers", "Economics", "Health",
+            "Medical", "Science", "Self-Help", "Art", "Novel"
+        )
+        categories.clear()
+        categoryNames.forEachIndexed { index, name ->
+            val category = Category(name, index == 0) // Chọn thể loại đầu tiên mặc định
+            categories.add(category)
+            if (index == 0) currentCategory = name
+        }
+
+        categoryAdapter = CategoryAdapter(categories) { categoryName ->
+            currentCategory = categoryName
+            fetchBooksByCategory(categoryName, true)
+        }
+        binding.categoriesRecyclerView.apply {
+            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            adapter = categoryAdapter
+        }
+
+        // Lấy sách cho thể loại đầu tiên mặc định
+        fetchBooksByCategory(currentCategory!!, true)
+    }
+
+    // Thiết lập RecyclerView cho sách theo thể loại
+    private fun setupCategoryBooksRecyclerView() {
+        categoryBooksAdapter = BookAdapter(categoryBooksList) { book ->
+            val bundle = Bundle().apply {
+                putParcelable("book", book)
+            }
+            navController.navigate(R.id.action_homeFragment_to_bookDetailFragment, bundle)
+        }
+        binding.categoryBooksRecyclerView.apply {
+            layoutManager = GridLayoutManager(context, 2)
+            adapter = categoryBooksAdapter
+            addItemDecoration(GridSpacingItemDecoration(2, 140, true)) // 16dp spacing
+        }
+    }
+
+    // Lấy sách theo thể loại từ Firebase
+    private fun fetchBooksByCategory(category: String, clearList: Boolean) {
+        if (clearList) {
+            categoryBooksList.clear()
+            lastVisibleBook = null
+        }
+
+        val booksRef = FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app")
+            .reference.child("categories").child(category)
+
+        val query = if (lastVisibleBook == null) {
+            booksRef.orderByKey().limitToFirst(booksPerPage)
+        } else {
+            booksRef.orderByKey().startAfter(lastVisibleBook).limitToFirst(booksPerPage)
+        }
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (clearList) {
+                    categoryBooksList.clear()
+                }
+
+                for (bookSnapshot in snapshot.children) {
+                    try {
+                        val book = bookSnapshot.getValue(Book::class.java)?.copy(id = bookSnapshot.key ?: "")
+                        book?.let {
+                            categoryBooksList.add(it)
+                            lastVisibleBook = bookSnapshot.key
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error parsing book ${bookSnapshot.key}: ${e.message}")
+                    }
+                }
+
+                if (categoryBooksList.isNotEmpty()) {
+                    categoryBooksAdapter.notifyDataSetChanged()
+                    binding.loadMoreBtn.visibility = View.VISIBLE
+                    Log.d(TAG, "Loaded ${categoryBooksList.size} books for category $category")
+                } else {
+                    binding.loadMoreBtn.visibility = View.GONE
+                    Toast.makeText(context, "No books found in category $category", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "Failed to fetch books for category $category: ${error.message}")
+                Toast.makeText(context, "Failed to fetch books: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    // Tải thêm sách khi nhấn "Xem thêm"
+    private fun fetchMoreBooksByCategory() {
+        currentCategory?.let { category ->
+            val previousSize = categoryBooksList.size
+            fetchBooksByCategory(category, false)
+            // Cuộn NestedScrollView xuống dưới cùng sau khi thêm dữ liệu mới
+            binding.root.post {
+                binding.root.fullScroll(View.FOCUS_DOWN)
+            }
+        }
+    }
+
+    private fun init(view: View) {
+        auth = FirebaseAuth.getInstance()
+        authId = auth.currentUser!!.uid
+        database = FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app").reference.child("Tasks").child(authId)
+        navController = Navigation.findNavController(view) // Khởi tạo navController
+
+
+
+
+        // Khởi tạo RecyclerView cho books ngay từ đầu với danh sách rỗng
+        setupBookRecyclerView()
     }
 
 //    private fun fetchBooksFromGoogleBooks() {
@@ -244,18 +384,7 @@ class HomeFragment : Fragment() {
 //            }
 //    }
 
-    private fun init(view: View) {
-        auth = FirebaseAuth.getInstance()
-        authId = auth.currentUser!!.uid
-        database = FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app").reference.child("Tasks").child(authId)
-        navController = Navigation.findNavController(view) // Khởi tạo navController
 
-
-
-
-        // Khởi tạo RecyclerView cho books ngay từ đầu với danh sách rỗng
-        setupBookRecyclerView()
-    }
 
 }
 

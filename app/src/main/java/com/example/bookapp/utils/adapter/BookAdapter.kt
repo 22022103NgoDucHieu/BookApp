@@ -31,11 +31,16 @@ class BookAdapter(
         private val thumbnail: ImageView = itemView.findViewById(R.id.bookThumbnail)
 
         fun bind(book: Book) {
-            Picasso.get()
-                .load(book.thumbnail)
-                .placeholder(R.drawable.placeholder_book)
-                .error(R.drawable.error_book)
-                .into(thumbnail)
+            if (!book.thumbnail.isNullOrEmpty()) {
+                Picasso.get()
+                    .load(book.thumbnail)
+                    .placeholder(R.drawable.placeholder_book)
+                    .error(R.drawable.error_book)
+                    .into(thumbnail)
+            } else {
+                // Nếu thumbnail rỗng hoặc null, hiển thị hình ảnh mặc định
+                thumbnail.setImageResource(R.drawable.placeholder_book)
+            }
 
             itemView.setOnClickListener {
                 onBookClick(book)

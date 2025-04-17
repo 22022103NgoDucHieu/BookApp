@@ -88,11 +88,16 @@ class BookDetailFragment : Fragment() {
             }
 
             // Tải ảnh bìa bằng Picasso
-            Picasso.get()
-                .load(it.thumbnail)
-                .placeholder(R.drawable.placeholder_book)
-                .error(R.drawable.error_book)
-                .into(binding.bookThumbnail)
+            if (!it.thumbnail.isNullOrEmpty()) {
+                Picasso.get()
+                    .load(it.thumbnail)
+                    .placeholder(R.drawable.placeholder_book)
+                    .error(R.drawable.error_book)
+                    .into(binding.bookThumbnail)
+            } else {
+                // Nếu thumbnail rỗng hoặc null, hiển thị hình ảnh mặc định
+                binding.bookThumbnail.setImageResource(R.drawable.placeholder_book)
+            }
 
             // Xử lý nút Google Books
             val googleLink = it.googleBooksLink

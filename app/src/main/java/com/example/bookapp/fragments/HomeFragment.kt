@@ -53,6 +53,10 @@ class HomeFragment : Fragment() {
 
     private lateinit var bookAdapter: BookAdapter
     private val bookList: MutableList<Book> = mutableListOf()
+    private var lastVisibleReadCount: Long? = null // Lưu readCount của sách cuối cùng
+    private var lastVisibleBookId: String? = null // Lưu ID của sách cuối cùng
+    private val booksPerPageTopBooks = 10 // Số sách ban đầu
+    private val additionalBooksPerLoad = 5 // Số sách tải thêm mỗi lần
 
     private lateinit var categoryAdapter: CategoryAdapter
     private val categories: MutableList<Category> = mutableListOf()
@@ -79,7 +83,7 @@ class HomeFragment : Fragment() {
         // Lấy dữ liệu sách từ Google Books API và đẩy lên Firebase
         //fetchBooksFromGoogleBooks()
 
-        fetchBooksFromFirebase()
+        fetchBooksFromFirebase(true)
 
         // Thêm sự kiện cho nút đăng xuất
         binding.logoutBtn.setOnClickListener {
@@ -109,6 +113,10 @@ class HomeFragment : Fragment() {
 
         // Thiết lập RecyclerView cho sách theo thể loại
         setupCategoryBooksRecyclerView()
+        // Sự kiện nhấn vào mũi tên "Tải thêm" ở topbook
+        binding.loadMoreArrow.setOnClickListener {
+            fetchBooksFromFirebase(false)
+        }
 
         // Sự kiện nhấn nút "Xem thêm"
         binding.loadMoreBtn.setOnClickListener {
@@ -116,31 +124,58 @@ class HomeFragment : Fragment() {
         }
     }
 
-    //top book
-    private fun fetchBooksFromFirebase() {
+    // Top book
+    private fun fetchBooksFromFirebase(clearList: Boolean) {
         val booksRef = FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app")
             .reference.child("books")
 
-        booksRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        val query = if (clearList || lastVisibleReadCount == null || lastVisibleBookId == null) {
+            // Lần đầu tiên, lấy 10 sách có readCount cao nhất
+            booksRef.orderByChild("readCount").limitToLast(booksPerPageTopBooks)
+        } else {
+            // Tải thêm 5 sách tiếp theo
+            booksRef.orderByChild("readCount")
+                .endBefore(lastVisibleReadCount!!.toDouble(), lastVisibleBookId)
+                .limitToLast(additionalBooksPerLoad)
+        }
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                bookList.clear()
+                if (clearList) {
+                    bookList.clear()
+                    lastVisibleReadCount = null
+                    lastVisibleBookId = null
+                }
+
+                val tempList = mutableListOf<Book>()
                 for (bookSnapshot in snapshot.children) {
                     try {
                         val book = bookSnapshot.getValue(Book::class.java)?.copy(id = bookSnapshot.key ?: "")
                         book?.let {
-                            if (bookList.size < 10) {
-                                bookList.add(it)
-                            }
+                            tempList.add(it)
                         }
                     } catch (e: Exception) {
                         Log.e(TAG, "Error parsing book ${bookSnapshot.key}: ${e.message}")
                     }
-                    if (bookList.size == 10) break
                 }
+
+                // Đảo ngược danh sách để hiển thị từ readCount cao nhất đến thấp nhất
+                val sortedList = tempList.reversed()
+                bookList.addAll(sortedList)
+
                 if (bookList.isNotEmpty()) {
                     bookAdapter.notifyDataSetChanged()
-                    Log.d(TAG, "Loaded ${bookList.size} books from Firebase")
+                    Log.d(TAG, "Loaded ${bookList.size} books from Firebase with highest readCount")
+
+                    // Lưu thông tin của sách cuối cùng để phân trang
+                    val lastBook = sortedList.lastOrNull()
+                    lastVisibleReadCount = lastBook?.readCount?.toLong()
+                    lastVisibleBookId = lastBook?.id
+
+                    // Hiển thị mũi tên "Tải thêm" nếu có sách được tải
+                    binding.loadMoreArrow.visibility = View.VISIBLE
                 } else {
+                    binding.loadMoreArrow.visibility = View.GONE
                     Toast.makeText(context, "No books found in Firebase", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -151,7 +186,6 @@ class HomeFragment : Fragment() {
             }
         })
     }
-
     private fun setupBookRecyclerView() {
         bookAdapter = BookAdapter(bookList) { book ->
             val bundle = Bundle().apply {
@@ -229,25 +263,67 @@ class HomeFragment : Fragment() {
                     categoryBooksList.clear()
                 }
 
+                val bookIds = mutableListOf<String>()
                 for (bookSnapshot in snapshot.children) {
-                    try {
-                        val book = bookSnapshot.getValue(Book::class.java)?.copy(id = bookSnapshot.key ?: "")
-                        book?.let {
-                            categoryBooksList.add(it)
-                            lastVisibleBook = bookSnapshot.key
-                        }
-                    } catch (e: Exception) {
-                        Log.e(TAG, "Error parsing book ${bookSnapshot.key}: ${e.message}")
-                    }
+                    val bookId = bookSnapshot.key ?: continue
+                    bookIds.add(bookId)
+                    lastVisibleBook = bookId
                 }
 
-                if (categoryBooksList.isNotEmpty()) {
-                    categoryBooksAdapter.notifyDataSetChanged()
-                    binding.loadMoreBtn.visibility = View.VISIBLE
-                    Log.d(TAG, "Loaded ${categoryBooksList.size} books for category $category")
-                } else {
+                if (bookIds.isEmpty()) {
                     binding.loadMoreBtn.visibility = View.GONE
                     Toast.makeText(context, "No books found in category $category", Toast.LENGTH_SHORT).show()
+                    return@onDataChange
+                }
+
+                val booksRefGlobal = FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app")
+                    .reference.child("books")
+
+                bookIds.forEach { bookId ->
+                    booksRefGlobal.child(bookId).addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(bookSnapshot: DataSnapshot) {
+                            if (bookSnapshot.exists()) {
+                                try {
+                                    val book = bookSnapshot.getValue(Book::class.java)?.copy(id = bookId)
+                                    book?.let {
+                                        categoryBooksList.add(it)
+                                        updateRecyclerView(category)
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e(TAG, "Error parsing book $bookId from books: ${e.message}")
+                                }
+                            } else {
+                                booksRef.child(bookId).addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(categorySnapshot: DataSnapshot) {
+                                        try {
+                                            val book = categorySnapshot.getValue(Book::class.java)?.copy(id = bookId)
+                                            book?.let { bookToAdd ->
+                                                booksRefGlobal.child(bookId).setValue(bookToAdd)
+                                                    .addOnSuccessListener {
+                                                        Log.d(TAG, "Added book $bookId to books from category $category")
+                                                        categoryBooksList.add(bookToAdd) // Sử dụng bookToAdd thay vì it
+                                                        updateRecyclerView(category)
+                                                    }
+                                                    .addOnFailureListener { e ->
+                                                        Log.e(TAG, "Failed to add book $bookId to books: ${e.message}")
+                                                    }
+                                            }
+                                        } catch (e: Exception) {
+                                            Log.e(TAG, "Error parsing book $bookId from categories: ${e.message}")
+                                        }
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError) {
+                                        Log.e(TAG, "Failed to fetch book $bookId from categories: ${error.message}")
+                                    }
+                                })
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Log.e(TAG, "Failed to fetch book $bookId from books: ${error.message}")
+                        }
+                    })
                 }
             }
 
@@ -256,6 +332,13 @@ class HomeFragment : Fragment() {
                 Toast.makeText(context, "Failed to fetch books: ${error.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    // Hàm tiện ích để cập nhật RecyclerView và nút "Xem thêm"
+    private fun updateRecyclerView(category: String) {
+        categoryBooksAdapter.notifyDataSetChanged()
+        binding.loadMoreBtn.visibility = View.VISIBLE
+        Log.d(TAG, "Loaded ${categoryBooksList.size} books for category $category")
     }
 
     // Tải thêm sách khi nhấn "Xem thêm"

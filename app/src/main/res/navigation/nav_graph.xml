@@ -86,6 +86,19 @@
         android:label="fragment_book_detail"
         tools:layout="@layout/fragment_book_detail" />
 
+    <!-- Tìm kiếm -->
+    <fragment
+        android:id="@+id/nav_search"
+        android:name="com.example.bookapp.fragments.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search">
+        <action
+            android:id="@+id/action_searchFragment_to_bookDetailFragment"
+            app:destination="@id/bookDetailFragment"
+            app:popUpTo="@id/nav_search"
+            app:popUpToInclusive="true" />
+    </fragment>
+
     <!-- Hồ sơ -->
     <fragment
         android:id="@+id/nav_profile"
@@ -101,13 +114,6 @@
             android:id="@+id/action_nav_profile_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
     </fragment>
-
-    <!-- Tìm kiếm -->
-    <fragment
-        android:id="@+id/nav_search"
-        android:name="com.example.bookapp.fragments.SearchFragment"
-        android:label="Search"
-        tools:layout="@layout/fragment_search" />
 
     <!-- Chỉnh sửa hồ sơ -->
     <fragment

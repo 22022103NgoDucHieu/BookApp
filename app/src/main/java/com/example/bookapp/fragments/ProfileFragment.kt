@@ -5,13 +5,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import com.example.bookapp.R
 
 import com.example.bookapp.databinding.FragmentProfileBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
+
 
 class ProfileFragment : Fragment() {
 
@@ -31,6 +35,10 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        val editProfileButton = view.findViewById<Button>(R.id.button3)
+        editProfileButton.setOnClickListener {
+            findNavController().navigate(R.id.action_nav_profile_to_editProfileFragment)
+        }
 
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
@@ -50,8 +58,10 @@ class ProfileFragment : Fragment() {
                     binding.email.text = email ?: "No email"
 
                     if (!avatarUrl.isNullOrEmpty()) {
-                        com.squareup.picasso.Picasso.get()
+                        Picasso.get()
                             .load(avatarUrl)
+                            .placeholder(R.drawable.avatar)
+                            .transform(CircleTransform())
                             .into(binding.avatar)
                     }
 
@@ -65,6 +75,7 @@ class ProfileFragment : Fragment() {
         } else {
             Toast.makeText(requireContext(), "Chưa đăng nhập", Toast.LENGTH_SHORT).show()
         }
+
     }
 
     override fun onDestroyView() {

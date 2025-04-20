@@ -5,6 +5,7 @@
     android:id="@+id/nav_graph"
     app:startDestination="@id/splashFragment">
 
+    <!-- Splash -->
     <fragment
         android:id="@+id/splashFragment"
         android:name="com.example.bookapp.fragments.SplashFragment"
@@ -22,6 +23,8 @@
             app:popUpTo="@id/splashFragment"
             app:popUpToInclusive="true" />
     </fragment>
+
+    <!-- Đăng nhập -->
     <fragment
         android:id="@+id/signInFragment"
         android:name="com.example.bookapp.fragments.SignInFragment"
@@ -38,6 +41,8 @@
             app:popUpTo="@id/signInFragment"
             app:popUpToInclusive="true" />
     </fragment>
+
+    <!-- Đăng ký -->
     <fragment
         android:id="@+id/signUpFragment"
         android:name="com.example.bookapp.fragments.SignUpFragment"
@@ -54,6 +59,8 @@
             app:popUpTo="@id/signUpFragment"
             app:popUpToInclusive="true" />
     </fragment>
+
+    <!-- Trang chủ -->
     <fragment
         android:id="@+id/nav_home"
         android:name="com.example.bookapp.fragments.HomeFragment"
@@ -69,40 +76,44 @@
             app:destination="@id/bookDetailFragment" />
         <action
             android:id="@+id/action_homeFragment_to_profileFragment"
-            app:destination="@+id/profileFragment"/>
-
+            app:destination="@id/nav_profile" />
     </fragment>
+
+    <!-- Chi tiết sách -->
     <fragment
         android:id="@+id/bookDetailFragment"
         android:name="com.example.bookapp.fragments.BookDetailFragment"
-        android:label="fragment_book_detail">
-    </fragment>
-    <fragment
-        android:id="@+id/profileFragment"
-        android:name="com.example.bookapp.fragments.ProfileFragment"
-        android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        android:label="fragment_book_detail"
+        tools:layout="@layout/fragment_book_detail" />
 
-    <!-- Bottom Navigation Fragments -->
-
-
-    <fragment
-        android:id="@+id/nav_search"
-        android:name="com.example.bookapp.fragments.SearchFragment"
-        android:label="Search"
-        tools:layout="@layout/fragment_search" />
-
+    <!-- Hồ sơ -->
     <fragment
         android:id="@+id/nav_profile"
         android:name="com.example.bookapp.fragments.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile">
         <action
-            android:id="@+id/action_profileFragment_to_signInFragment"
+            android:id="@+id/action_nav_profile_to_signInFragment"
             app:destination="@id/signInFragment"
             app:popUpTo="@id/nav_profile"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_nav_profile_to_editProfileFragment"
+            app:destination="@id/editProfileFragment" />
     </fragment>
 
+    <!-- Tìm kiếm -->
+    <fragment
+        android:id="@+id/nav_search"
+        android:name="com.example.bookapp.fragments.SearchFragment"
+        android:label="Search"
+        tools:layout="@layout/fragment_search" />
+
+    <!-- Chỉnh sửa hồ sơ -->
+    <fragment
+        android:id="@+id/editProfileFragment"
+        android:name="com.example.bookapp.fragments.EditProfileFragment"
+        android:label="Edit Profile"
+        tools:layout="@layout/fragment_edit_profile" />
 
 </navigation>

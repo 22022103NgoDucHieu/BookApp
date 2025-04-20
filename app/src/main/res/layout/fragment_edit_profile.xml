@@ -63,6 +63,19 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="8dp" />
 
+        <!-- Label: Tên hiển thị -->
+        <TextView
+            android:id="@+id/labelDisplayName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tên hiển thị"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/btnChangePicture"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="24dp" />
+
         <!-- Tên -->
         <EditText
             android:id="@+id/edtName"
@@ -70,10 +83,23 @@
             android:layout_height="wrap_content"
             android:hint="Tên"
             android:inputType="textPersonName"
-            app:layout_constraintTop_toBottomOf="@id/btnChangePicture"
+            app:layout_constraintTop_toBottomOf="@id/labelDisplayName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="24dp" />
+            android:layout_marginTop="8dp" />
+
+        <!-- Label: Thể loại yêu thích -->
+        <TextView
+            android:id="@+id/labelBookPref"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thể loại yêu thích"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            app:layout_constraintTop_toBottomOf="@id/edtName"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="16dp" />
 
         <!-- The loai yeu thich -->
         <EditText
@@ -82,10 +108,11 @@
             android:layout_height="wrap_content"
             android:hint="Thể loại yêu thích"
             android:inputType="text"
-            app:layout_constraintTop_toBottomOf="@id/edtName"
+            app:layout_constraintTop_toBottomOf="@id/labelBookPref"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="8dp" />
+
 
 
 

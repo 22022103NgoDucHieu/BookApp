@@ -35,18 +35,24 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.buttonLogout.setOnClickListener {
+            findNavController().navigate(R.id.action_nav_profile_to_signInFragment)
+        }
+
         val editProfileButton = view.findViewById<Button>(R.id.button3)
         editProfileButton.setOnClickListener {
             findNavController().navigate(R.id.action_nav_profile_to_editProfileFragment)
         }
+
 
         auth = FirebaseAuth.getInstance()
         val currentUser = auth.currentUser
 
         if (currentUser != null) {
             val uid = currentUser.uid
-            database = FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app/")
-                .getReference("users").child(uid)
+            database =
+                FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app/")
+                    .getReference("users").child(uid)
 
             database.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -69,7 +75,8 @@ class ProfileFragment : Fragment() {
 
 
                 override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_SHORT)
+                        .show()
                 }
             })
         } else {

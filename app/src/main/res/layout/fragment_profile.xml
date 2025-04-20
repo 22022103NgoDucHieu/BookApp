@@ -8,6 +8,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -34,15 +35,14 @@
                     app:layout_constraintBottom_toBottomOf="@+id/imageView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/imageView"
-                    app:layout_constraintTop_toBottomOf="@+id/imageView"
-                     />
+                    app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
                 <TextView
                     android:id="@+id/name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Đặng Minh Dương"
                     android:layout_marginTop="16dp"
+                    android:text="Đặng Minh Dương"
                     android:textSize="25sp"
                     android:textStyle="bold"
 
@@ -156,6 +156,25 @@
                         android:textAlignment="viewStart"
                         android:textSize="18sp"
                         android:textStyle="bold" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/buttonLogout"
+                        style="@android:style/Widget.Button"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
+                        android:layout_marginStart="32dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="32dp"
+                        android:layout_marginBottom="24dp"
+
+                        android:drawableStart="@drawable/log_out"
+                        android:drawablePadding="20dp"
+                        android:paddingStart="20dp"
+                        android:text="Đăng xuất"
+                        android:textAlignment="viewStart"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>

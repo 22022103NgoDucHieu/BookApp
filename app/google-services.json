@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "59389510547",
+    "firebase_url": "https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app",
     "project_id": "bookapp-6d5d8",
     "storage_bucket": "bookapp-6d5d8.firebasestorage.app"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.bookapp"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "59389510547-7eh12dtatsr8a75r35g49qdph02i6s76.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.bookapp",
+            "certificate_hash": "3903d9d75001af6f98c1cde9fcd87c08b1e924f1"
+          }
+        },
+        {
+          "client_id": "59389510547-gab29ev4tc8gjq25vmp7576g0ejaarq2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCBP3pi9m6ifJiNi5Nejf-y5uZS_50e5nc"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "59389510547-gab29ev4tc8gjq25vmp7576g0ejaarq2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

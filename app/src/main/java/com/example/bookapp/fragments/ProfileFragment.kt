@@ -1,6 +1,5 @@
 package com.example.bookapp.fragments
 
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,10 +11,11 @@ import androidx.navigation.fragment.findNavController
 import com.example.bookapp.R
 
 import com.example.bookapp.databinding.FragmentProfileBinding
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
-
 
 class ProfileFragment : Fragment() {
 
@@ -36,7 +36,7 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.buttonLogout.setOnClickListener {
-            findNavController().navigate(R.id.action_nav_profile_to_signInFragment)
+            signOut()
         }
 
         val editProfileButton = view.findViewById<Button>(R.id.button3)
@@ -49,39 +49,60 @@ class ProfileFragment : Fragment() {
         val currentUser = auth.currentUser
 
         if (currentUser != null) {
-            val uid = currentUser.uid
-            database =
-                FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app/")
+            val name = currentUser.displayName
+            val email = currentUser.email
+            val avatarUrl = currentUser.photoUrl?.toString()
+
+            if (!name.isNullOrEmpty() && !avatarUrl.isNullOrEmpty()) {
+                // 👉 Trường hợp đăng nhập Google
+                binding.name.text = name
+                binding.email.text = email
+                Picasso.get().load(avatarUrl)
+                    .placeholder(R.drawable.ic_3)
+                    .into(binding.avatar)
+            } else {
+                // 👉 Trường hợp đăng nhập email/password hoặc thông tin Google chưa đủ
+                val uid = currentUser.uid
+                database = FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app/")
                     .getReference("users").child(uid)
 
-            database.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val name = snapshot.child("displayName").getValue(String::class.java)
-                    val email = snapshot.child("email").getValue(String::class.java)
-                    val avatarUrl = snapshot.child("avatarUrl").getValue(String::class.java)
+                database.addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val displayName = snapshot.child("displayName").getValue(String::class.java)
+                        val avatarUrl = snapshot.child("avatarUrl").getValue(String::class.java)
 
-                    binding.name.text = name ?: "No name"
-                    binding.email.text = email ?: "No email"
+                        binding.name.text = displayName ?: ""
+                        binding.email.text = currentUser.email ?: ""
 
-                    if (!avatarUrl.isNullOrEmpty()) {
-                        Picasso.get()
-                            .load(avatarUrl)
-                            .placeholder(R.drawable.avatar)
-                            .transform(CircleTransform())
-                            .into(binding.avatar)
+                        if (!avatarUrl.isNullOrEmpty()) {
+                            Picasso.get()
+                                .load(avatarUrl)
+                                .transform(CircleTransform())
+                                .into(binding.avatar)
+
+                        }
                     }
 
-                }
-
-
-                override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(requireContext(), "Error: ${error.message}", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            })
+                    override fun onCancelled(error: DatabaseError) {
+                        Toast.makeText(requireContext(), "Lỗi: ${error.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+            // Change password
+            binding.changePassword.setOnClickListener {
+                FirebaseAuth.getInstance().sendPasswordResetEmail(email.toString())
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(context, "Đã gửi email khôi phục mật khẩu", Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(context, "Lỗi: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                        }
+                    }
+            }
         } else {
             Toast.makeText(requireContext(), "Chưa đăng nhập", Toast.LENGTH_SHORT).show()
         }
+
 
     }
 
@@ -89,4 +110,20 @@ class ProfileFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+    private fun signOut() {
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+
+        val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
+
+        googleSignInClient.signOut().addOnCompleteListener {
+            FirebaseAuth.getInstance().signOut()
+
+            Toast.makeText(requireContext(), "Đã đăng xuất", Toast.LENGTH_SHORT).show()
+            findNavController().navigate(R.id.action_nav_profile_to_signInFragment)
+        }
+    }
+
 }

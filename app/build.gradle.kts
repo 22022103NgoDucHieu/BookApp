@@ -70,6 +70,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("com.google.firebase:firebase-auth-ktx:22.3.0")
+    implementation("com.google.android.gms:play-services-auth:20.7.0")
+
 
     //Picasso
     implementation ("com.squareup.picasso:picasso:2.8")
@@ -102,4 +105,5 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9")
+
 }

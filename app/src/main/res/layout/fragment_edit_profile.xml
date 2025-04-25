@@ -50,7 +50,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/btnBack"
-            app:srcCompat="@drawable/avatar" />
+            app:srcCompat="@drawable/ic_3" />
 
         <!-- Nút đổi ảnh -->
         <Button

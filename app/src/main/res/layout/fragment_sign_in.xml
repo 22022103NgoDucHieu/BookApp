@@ -4,184 +4,185 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/white"
     tools:context=".fragments.SignInFragment">
 
-
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
+        android:id="@+id/topBackground"
+        android:layout_width="0dp"
         android:layout_height="200dp"
         android:scaleType="fitXY"
-        android:src="@drawable/design_one"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/top_background"
+        tools:srcCompat="@drawable/top_background" />
 
     <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="60dp"
-        android:layout_height="130dp"
-        android:rotation="180"
-        android:scaleType="fitXY"
-        android:src="@drawable/ellipse_one"
+        android:id="@+id/avatarIcon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="-40dp"
+        android:src="@drawable/ic_3"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
-
-
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="0dp"
-        android:layout_height="210dp"
-        android:layout_marginStart="12dp"
-        android:scaleType="fitXY"
-        android:src="@drawable/design_two"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent" />
-
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBackground" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Đăng nhập"
+        android:textColor="@android:color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/avatarIcon" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardViewEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:boxBackgroundColor="@android:color/white"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtEmail"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardViewPassword"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="32dp"
+        android:layout_marginTop="12dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="4dp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintTop_toBottomOf="@id/cardViewEmail"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:passwordToggleEnabled="true"
+            app:boxBackgroundColor="@android:color/white"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusBottomEnd="12dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/edtPassword"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:hint="Mật khẩu"
+                android:inputType="textPassword"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/tvForgotPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forgot your password?"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/cardViewPassword"
+        app:layout_constraintEnd_toEndOf="@id/cardViewPassword" />
+
+    <Button
+        android:id="@+id/btnSignIn"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#673AB7"
+        android:text="Đăng nhập"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="@id/cardViewPassword"
+        app:layout_constraintStart_toStartOf="@id/cardViewPassword"
+        app:layout_constraintTop_toBottomOf="@id/tvForgotPassword" />
+
+    <!-- Social Login Section -->
+    <LinearLayout
+        android:id="@+id/layoutSocialLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:fontFamily="@font/inter_extra_bold"
-        android:text="Sign In"
-        android:textColor="@color/white"
-        android:textSize="30sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardView1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="-64dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="8dp"
-        app:cardUseCompatPadding="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/btnSignIn"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/imageView2">
+        app:layout_constraintEnd_toEndOf="parent">
 
+        <ImageView
+            android:id="@+id/ivGoogle"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="Google Sign In"
+            android:src="@drawable/google" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/white"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
-            app:hintEnabled="false">
+        <Space
+            android:layout_width="16dp"
+            android:layout_height="wrap_content" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/emailEt"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:paddingTop="15dp"
-                android:background="@color/white"
-                android:hint="@string/enter_your_email"
-                android:inputType="textEmailAddress"
-                android:paddingStart="12dp" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardView2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="5dp"
-        app:cardCornerRadius="8dp"
-        app:cardElevation="8dp"
-        app:cardUseCompatPadding="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardView1">
-
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/white"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
-            app:hintEnabled="false"
-            app:passwordToggleEnabled="true">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/passEt"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:paddingTop="15dp"
-                android:background="@color/white"
-                android:hint="@string/enter_your_pass"
-                android:inputType="textPassword"
-                android:paddingStart="12dp" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-
-    </com.google.android.material.card.MaterialCardView>
-
-
-    <ImageView
-        android:id="@+id/nextBtn"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="12dp"
-        android:src="@drawable/btn"
-        app:layout_constraintEnd_toEndOf="@id/cardView2"
-        app:layout_constraintTop_toBottomOf="@id/cardView2" />
-
+        <ImageView
+            android:id="@+id/ivFacebook"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:contentDescription="Facebook Sign In"
+            android:src="@drawable/facebook" />
+    </LinearLayout>
 
     <TextView
-        android:id="@+id/textview32"
+        android:id="@+id/tvRegisterPrompt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:fontFamily="@font/inter_regular"
-        android:text="Not Registered Yet ??"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/textViewSignUp"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@id/nextBtn" />
+        android:layout_marginTop="32dp"
+        android:text="Chưa có tài khoản?"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@id/btnSignIn"
+        app:layout_constraintTop_toBottomOf="@id/layoutSocialLogin" />
 
     <TextView
-        android:id="@+id/textViewSignUp"
+        android:id="@+id/tvSignUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/inter_regular"
-        android:text=" Sign Up"
-        android:textColor="@color/text_color"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toStartOf="@+id/guideline3"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/textview32"
-        app:layout_constraintTop_toTopOf="@id/textview32" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.20" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.80" />
+        android:layout_marginStart="8dp"
+        android:text="Đăng ký"
+        android:textColor="#673AB7"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/tvRegisterPrompt"
+        app:layout_constraintTop_toTopOf="@id/tvRegisterPrompt" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

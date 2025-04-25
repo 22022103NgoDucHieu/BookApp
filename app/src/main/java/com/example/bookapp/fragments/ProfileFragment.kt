@@ -36,7 +36,8 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.buttonLogout.setOnClickListener {
-            signOut()
+            auth.signOut()
+            findNavController().navigate(R.id.action_nav_profile_to_signInFragment)
         }
 
         val editProfileButton = view.findViewById<Button>(R.id.button3)
@@ -111,6 +112,10 @@ class ProfileFragment : Fragment() {
         _binding = null
     }
     private fun signOut() {
+        // Đăng xuất Firebase trước (tài khoản backend)
+        FirebaseAuth.getInstance().signOut()
+
+        // Tiếp theo, cố gắng đăng xuất Google (nếu không được thì không sao)
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -119,11 +124,11 @@ class ProfileFragment : Fragment() {
         val googleSignInClient = GoogleSignIn.getClient(requireContext(), gso)
 
         googleSignInClient.signOut().addOnCompleteListener {
-            FirebaseAuth.getInstance().signOut()
-
+            // Vẫn hiện thông báo và chuyển màn hình dù thành công hay không
             Toast.makeText(requireContext(), "Đã đăng xuất", Toast.LENGTH_SHORT).show()
             findNavController().navigate(R.id.action_nav_profile_to_signInFragment)
         }
     }
+
 
 }

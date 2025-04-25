@@ -39,14 +39,14 @@ class SignUpFragment : Fragment() {
 
         init(view)
 
-        binding.textViewSignIn.setOnClickListener {
+        binding.tvSignIn.setOnClickListener {
             navController.navigate(R.id.action_signUpFragment_to_signInFragment)
         }
 
-        binding.nextBtn.setOnClickListener {
-            val email = binding.emailEt.text.toString()
-            val pass = binding.passEt.text.toString()
-            val verifyPass = binding.verifyPassEt.text.toString()
+        binding.btnSignUp.setOnClickListener {
+            val email = binding.edtEmail.text.toString()
+            val pass = binding.edtPassword.text.toString()
+            val verifyPass = binding.edtConfirmPassword.text.toString()
 
             if (email.isNotEmpty() && pass.isNotEmpty() && verifyPass.isNotEmpty()) {
                 if (pass == verifyPass) {

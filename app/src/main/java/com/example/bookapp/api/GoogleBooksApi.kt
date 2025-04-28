@@ -30,7 +30,8 @@ data class GoogleBooksResponse(
 
 data class BookItem(
     val id: String,
-    val volumeInfo: VolumeInfo
+    val volumeInfo: VolumeInfo,
+    val saleInfo: SaleInfo?
 )
 
 data class VolumeInfo(
@@ -43,6 +44,10 @@ data class VolumeInfo(
     val imageLinks: ImageLinks?,
     val averageRating: Double?,
     val ratingsCount: Int?
+)
+
+data class SaleInfo(
+    val buyLink: String? // Lấy link mua sách (nếu có)
 )
 
 data class ImageLinks(

@@ -113,7 +113,7 @@ class BookDetailFragment : Fragment() {
             val amazonLink = it.purchaseLinks["amazon"]
             if (amazonLink.isNullOrEmpty()) {
                 binding.bookPurchaseButton.isEnabled = false
-                binding.bookPurchaseButton.text = "Không có link mua"
+                binding.bookPurchaseButton.text = "Null"
             } else {
                 binding.bookPurchaseButton.setOnClickListener {
                     openLink(amazonLink)

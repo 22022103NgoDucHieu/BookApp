@@ -95,8 +95,7 @@
         <action
             android:id="@+id/action_searchFragment_to_bookDetailFragment"
             app:destination="@id/bookDetailFragment"
-            app:popUpTo="@id/nav_search"
-            app:popUpToInclusive="true" />
+             />
     </fragment>
 
     <!-- Hồ sơ -->

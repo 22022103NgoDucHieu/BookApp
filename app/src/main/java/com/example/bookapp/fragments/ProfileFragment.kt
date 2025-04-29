@@ -1,5 +1,6 @@
 package com.example.bookapp.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -60,7 +61,9 @@ class ProfileFragment : Fragment() {
                 binding.email.text = email
                 Picasso.get().load(avatarUrl)
                     .placeholder(R.drawable.ic_3)
+                    .transform(CircleTransform())
                     .into(binding.avatar)
+
             } else {
                 // 👉 Trường hợp đăng nhập email/password hoặc thông tin Google chưa đủ
                 val uid = currentUser.uid
@@ -78,6 +81,7 @@ class ProfileFragment : Fragment() {
                         if (!avatarUrl.isNullOrEmpty()) {
                             Picasso.get()
                                 .load(avatarUrl)
+                                .placeholder(R.drawable.ic_3)
                                 .transform(CircleTransform())
                                 .into(binding.avatar)
 
@@ -91,14 +95,21 @@ class ProfileFragment : Fragment() {
             }
             // Change password
             binding.changePassword.setOnClickListener {
-                FirebaseAuth.getInstance().sendPasswordResetEmail(email.toString())
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(context, "Đã gửi email khôi phục mật khẩu", Toast.LENGTH_LONG).show()
-                        } else {
-                            Toast.makeText(context, "Lỗi: ${task.exception?.message}", Toast.LENGTH_LONG).show()
-                        }
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Xác nhận")
+                    .setMessage("Bạn có chắc muốn gửi email khôi phục mật khẩu đến:\n${email.toString()}?")
+                    .setPositiveButton("Gửi") { _, _ ->
+                        FirebaseAuth.getInstance().sendPasswordResetEmail(email.toString())
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    Toast.makeText(context, "Đã gửi email khôi phục mật khẩu", Toast.LENGTH_LONG).show()
+                                } else {
+                                    Toast.makeText(context, "Lỗi: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                                }
+                            }
                     }
+                    .setNegativeButton("Hủy", null)
+                    .show()
             }
         } else {
             Toast.makeText(requireContext(), "Chưa đăng nhập", Toast.LENGTH_SHORT).show()

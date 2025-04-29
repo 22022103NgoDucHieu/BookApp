@@ -1,5 +1,6 @@
 package com.example.bookapp.fragments
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -65,14 +66,21 @@ class SignInFragment : Fragment() {
             if (email.isEmpty()) {
                 Toast.makeText(context, "Vui lòng nhập email đã đăng ký", Toast.LENGTH_SHORT).show()
             } else {
-                FirebaseAuth.getInstance().sendPasswordResetEmail(email)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Toast.makeText(context, "Đã gửi email khôi phục mật khẩu", Toast.LENGTH_LONG).show()
-                        } else {
-                            Toast.makeText(context, "Lỗi: ${task.exception?.message}", Toast.LENGTH_LONG).show()
-                        }
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Xác nhận")
+                    .setMessage("Bạn có chắc muốn gửi email khôi phục mật khẩu đến:\n$email?")
+                    .setPositiveButton("Gửi") { _, _ ->
+                        FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    Toast.makeText(context, "Đã gửi email khôi phục mật khẩu", Toast.LENGTH_LONG).show()
+                                } else {
+                                    Toast.makeText(context, "Lỗi: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                                }
+                            }
                     }
+                    .setNegativeButton("Hủy", null)
+                    .show()
             }
         }
 

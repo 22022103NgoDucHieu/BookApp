@@ -61,7 +61,7 @@ class EditProfileFragment : Fragment() {
                     if (!avatarUrl.isNullOrEmpty()) {
                         Picasso.get()
                             .load(avatarUrl)
-                            .placeholder(R.drawable.avatar)
+                            .placeholder(R.drawable.ic_3)
                             .transform(CircleTransform())
                             .into(binding.imageAvatar)
                     }

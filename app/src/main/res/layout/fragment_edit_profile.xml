@@ -17,7 +17,6 @@
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:background="?attr/selectableItemBackgroundBorderless"
-
             android:contentDescription="Quay lại"
             android:src="?attr/homeAsUpIndicator"
             app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +44,6 @@
             android:layout_height="100dp"
             android:layout_marginTop="32dp"
             android:contentDescription="Ảnh đại diện"
-
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -101,20 +99,15 @@
             app:layout_constraintStart_toStartOf="parent"
             android:layout_marginTop="16dp" />
 
-        <!-- The loai yeu thich -->
-        <EditText
-            android:id="@+id/edtBookPreference"
+        <!-- RecyclerView cho thể loại -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/categoriesRecyclerView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="Thể loại yêu thích"
-            android:inputType="text"
+            android:layout_marginTop="8dp"
             app:layout_constraintTop_toBottomOf="@id/labelBookPref"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp" />
-
-
-
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <!-- Nút cập nhật -->
         <Button
@@ -124,7 +117,7 @@
             android:text="Cập nhật"
             android:backgroundTint="@android:color/black"
             android:textColor="@android:color/white"
-            app:layout_constraintTop_toBottomOf="@id/edtBookPreference"
+            app:layout_constraintTop_toBottomOf="@id/categoriesRecyclerView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="24dp"

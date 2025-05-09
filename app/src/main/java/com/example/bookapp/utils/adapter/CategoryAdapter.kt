@@ -21,19 +21,11 @@ class CategoryAdapter(
             categoryName.text = category.name
             // Thay đổi màu nền và màu chữ khi được chọn
             if (category.isSelected) {
-                categoryName.setBackgroundColor(
-                    ContextCompat.getColor(itemView.context, R.color.purple_200)
-                )
-                categoryName.setTextColor(
-                    ContextCompat.getColor(itemView.context, android.R.color.white)
-                )
+                categoryName.setTextColor(ContextCompat.getColor(itemView.context, R.color.white))  // Màu tím đậm khi được chọn
+                categoryName.setBackgroundResource(R.drawable.oval_border_background_selected)  // Nền khác khi được chọn
             } else {
-                categoryName.setBackgroundColor(
-                    ContextCompat.getColor(itemView.context, android.R.color.white)
-                )
-                categoryName.setTextColor(
-                    ContextCompat.getColor(itemView.context, android.R.color.black)
-                )
+                categoryName.setTextColor(ContextCompat.getColor(itemView.context, android.R.color.black))
+                categoryName.setBackgroundResource(R.drawable.oval_border_background)
             }
 
             itemView.setOnClickListener {

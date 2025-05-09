@@ -111,6 +111,11 @@ class ProfileFragment : Fragment() {
                     .setNegativeButton("Hủy", null)
                     .show()
             }
+
+            //favorite books
+            binding.button.setOnClickListener {
+                findNavController().navigate(R.id.action_nav_profile_to_favoriteBooksFragment)
+            }
         } else {
             Toast.makeText(requireContext(), "Chưa đăng nhập", Toast.LENGTH_SHORT).show()
         }

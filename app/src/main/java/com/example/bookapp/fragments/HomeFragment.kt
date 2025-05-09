@@ -85,28 +85,6 @@ class HomeFragment : Fragment() {
 
         fetchBooksFromFirebase(true)
 
-        // Thêm sự kiện cho nút đăng xuất
-        binding.logoutBtn.setOnClickListener {
-            auth.signOut()
-            navController.navigate(R.id.action_homeFragment_to_signInFragment)
-        }
-        // Thêm listener để thay đổi màu nền của topBooksTitle khi cuộn RecyclerView
-        binding.booksRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                // Nếu có cuộn ngang (dx != 0), đổi màu nền của topBooksTitle
-                if (dx != 0) {
-                    binding.topBooksTitle.setBackgroundColor(
-                        ContextCompat.getColor(requireContext(), R.color.purple_200) // Màu tím nhạt
-                    )
-                } else {
-                    // Nếu không cuộn, đặt lại màu nền ban đầu
-                    binding.topBooksTitle.setBackgroundColor(
-                        ContextCompat.getColor(requireContext(), android.R.color.white)
-                    )
-                }
-            }
-        })
 
         // Thiết lập danh sách thể loại
         setupCategoriesRecyclerView()
@@ -237,7 +215,7 @@ class HomeFragment : Fragment() {
         binding.categoryBooksRecyclerView.apply {
             layoutManager = GridLayoutManager(context, 2)
             adapter = categoryBooksAdapter
-            addItemDecoration(GridSpacingItemDecoration(2, 140, true)) // 16dp spacing
+            addItemDecoration(GridSpacingItemDecoration(2, 210, true)) // 16dp spacing
         }
     }
 

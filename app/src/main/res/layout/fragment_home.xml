@@ -6,151 +6,159 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="56dp"
+    android:background="#D4E9FB"
     tools:context=".fragments.HomeFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="wrap_content"
-            android:layout_height="200dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/design_one"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="60dp"
-            android:layout_height="130dp"
-            android:rotation="180"
-            android:scaleType="fitXY"
-            android:src="@drawable/ellipse_one"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"  />
+        <!-- Thẻ cho "Sách được đọc nhiều nhất" với nền và sọc -->
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/topBooksContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp"
+        android:background="@drawable/light_blue_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <!-- Sọc dọc màu xanh tím, dịch sang phải 20dp và rộng hơn -->
+        <View
+            android:id="@+id/stripe"
+            android:layout_width="8dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="6dp"
+        android:background="#9083E9"
+        app:layout_constraintBottom_toBottomOf="@id/topBooksTitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/topBooksTitle" />
 
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="0dp"
-            android:layout_height="210dp"
-            android:layout_marginStart="12dp"
-            android:scaleType="fitXY"
-            android:src="@drawable/design_two"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent" />
         <!-- Tiêu đề "Sách được đọc nhiều nhất" -->
         <TextView
             android:id="@+id/topBooksTitle"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@android:color/white"
+            android:layout_marginStart="8dp"
             android:padding="8dp"
             android:text="Sách được đọc nhiều nhất"
             android:textColor="@android:color/black"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- Thanh trượt ngang hiển thị bìa sách -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/booksRecyclerView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            android:nestedScrollingEnabled="false"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/topBooksTitle" />
-        <!-- Mũi tên "Tải thêm" -->
-        <ImageView
-            android:id="@+id/loadMoreArrow"
-            android:layout_width="38dp"
-            android:layout_height="38dp"
-            android:layout_marginTop="115dp"
-            android:layout_marginEnd="12dp"
-            android:src="@drawable/ic_arrow_down"
-            android:background="@drawable/bg_circle_white"
-            android:visibility="gone"
-            android:elevation="10dp"
-            android:padding="12dp"
+            app:layout_constraintStart_toEndOf="@id/stripe"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <!-- Tiêu đề "Sách theo thể loại" -->
-        <TextView
-            android:id="@+id/categoryBooksTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:background="@android:color/white"
-            android:padding="8dp"
-            android:text="Sách theo thể loại"
-            android:textColor="@android:color/black"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/booksRecyclerView" />
-
-        <!-- RecyclerView hiển thị danh sách nút thể loại -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/categoriesRecyclerView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            android:nestedScrollingEnabled="false"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/categoryBooksTitle" />
-
-        <!-- RecyclerView hiển thị sách theo thể loại dạng lưới -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/categoryBooksRecyclerView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:nestedScrollingEnabled="false"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/categoriesRecyclerView" />
-
-        <!-- Nút "Xem thêm" -->
-        <Button
-            android:id="@+id/loadMoreBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:text="Xem thêm"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/categoryBooksRecyclerView" />
-
-        <!-- ImageView được đặt dưới nút "Xem thêm" -->
-
-
-        <!-- Nút "Đăng xuất" -->
-        <Button
-            android:id="@+id/logoutBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:text="Đăng xuất"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/loadMoreBtn" />
+            app:layout_constraintBottom_toBottomOf="parent" />  <!-- Đảm bảo căn dưới cùng -->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+
+    <!-- Thanh trượt ngang hiển thị bìa sách -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/booksRecyclerView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        android:nestedScrollingEnabled="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/topBooksContainer" />
+
+    <!-- Mũi tên "Tải thêm" -->
+    <ImageView
+        android:id="@+id/loadMoreArrow"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:layout_marginTop="115dp"
+        android:layout_marginEnd="12dp"
+        android:src="@drawable/ic_arrow_down"
+        android:background="@drawable/bg_circle_white"
+        android:visibility="gone"
+        android:elevation="10dp"
+        android:padding="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Thẻ cho "Sách theo thể loại" với nền và sọc -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/categoryBooksContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+    android:background="@drawable/light_blue_background"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/booksRecyclerView">
+
+    <!-- Sọc dọc màu xanh tím, dịch sang phải 20dp và rộng hơn -->
+
+        <!-- Tiêu đề "Sách theo thể loại" -->
+        <View
+            android:id="@+id/categoryStripe"
+            android:layout_width="8dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="6dp"
+            android:background="#9083E9"
+            app:layout_constraintBottom_toBottomOf="@id/categoryBooksTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/categoryBooksTitle"
+            app:layout_constraintVertical_bias="1.0" />
+
+        <TextView
+        android:id="@+id/categoryBooksTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+
+        android:padding="8dp"
+        android:text="Sách theo thể loại"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toEndOf="@id/categoryStripe"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />  <!-- Đảm bảo căn dưới cùng -->
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- RecyclerView hiển thị danh sách nút thể loại -->
+<androidx.recyclerview.widget.RecyclerView
+android:id="@+id/categoriesRecyclerView"
+android:layout_width="0dp"
+android:layout_height="wrap_content"
+android:layout_marginTop="8dp"
+android:orientation="horizontal"
+android:nestedScrollingEnabled="false"
+app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toBottomOf="@id/categoryBooksContainer" />
+
+    <!-- RecyclerView hiển thị sách theo thể loại dạng lưới -->
+<androidx.recyclerview.widget.RecyclerView
+android:id="@+id/categoryBooksRecyclerView"
+android:layout_width="0dp"
+android:layout_height="wrap_content"
+android:layout_marginTop="8dp"
+android:nestedScrollingEnabled="false"
+app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toBottomOf="@id/categoriesRecyclerView" />
+
+    <!-- Nút "Xem thêm" -->
+<Button
+android:id="@+id/loadMoreBtn"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:layout_marginTop="8dp"
+android:layout_marginBottom="16dp"
+android:text="Xem thêm"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toBottomOf="@id/categoryBooksRecyclerView" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>

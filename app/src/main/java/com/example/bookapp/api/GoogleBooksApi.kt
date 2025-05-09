@@ -56,8 +56,8 @@ data class ImageLinks(
 
 object RetrofitClient {
     private const val BASE_URL = "https://www.googleapis.com/books/v1/"
-    const val API_KEY = "AIzaSyCVwgDkWJRhmnT7_M1cLNvaod46w2x7wPY" // Thay bằng API key thật
-
+    const val API_KEY = "AIzaSyCVwgDkWJRhmnT7_M1cLNvaod46w2x7wPY"
+//    const val API_KEY = "AIzaSyDvVaKjdNQPz9fSfUrytjeGE5IHYxgtMQs"
     val api: GoogleBooksApi by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)

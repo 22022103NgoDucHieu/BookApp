@@ -11,8 +11,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.bookapp.R
 import com.example.bookapp.databinding.FragmentEditProfileBinding
+import com.example.bookapp.utils.adapter.CategoryAdapter
+import com.example.bookapp.utils.model.Category
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
@@ -29,6 +32,9 @@ class EditProfileFragment : Fragment() {
 
     private var imageUri: Uri? = null
     private val PICK_IMAGE_REQUEST = 1001
+    private lateinit var categoryAdapter: CategoryAdapter
+    private val categories: MutableList<Category> = mutableListOf()
+    private val selectedCategories: MutableList<String> = mutableListOf()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,11 +58,13 @@ class EditProfileFragment : Fragment() {
             database.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val name = snapshot.getSafeString("displayName")
-                    val bookPref = snapshot.getSafeString("bookPreference")
+                    val bookPref = snapshot.getSafeString("bookPreference")?.split(",")?.map { it.trim() } ?: emptyList()
                     val avatarUrl = snapshot.getSafeString("avatarUrl")
 
                     binding.edtName.setText(name)
-                    binding.edtBookPreference.setText(bookPref)
+                    selectedCategories.clear()
+                    selectedCategories.addAll(bookPref)
+                    setupCategoriesRecyclerView()
 
                     if (!avatarUrl.isNullOrEmpty()) {
                         Picasso.get()
@@ -86,9 +94,34 @@ class EditProfileFragment : Fragment() {
         }
     }
 
+    private fun setupCategoriesRecyclerView() {
+        val categoryNames = listOf(
+            "Fiction", "Nonfiction", "Computers", "Economics", "Health",
+            "Medical", "Science", "Art", "Novel"
+        )
+        categories.clear()
+        categoryNames.forEach { name ->
+            categories.add(Category(name, selectedCategories.contains(name)))
+        }
+
+        categoryAdapter = CategoryAdapter(categories) { categoryName ->
+            if (selectedCategories.contains(categoryName)) {
+                selectedCategories.remove(categoryName)
+            } else {
+                selectedCategories.add(categoryName)
+            }
+            categories.forEach { it.isSelected = selectedCategories.contains(it.name) }
+            categoryAdapter.notifyDataSetChanged()
+        }
+        binding.categoriesRecyclerView.apply {
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            adapter = categoryAdapter
+        }
+    }
+
     private fun updateUserData() {
-        val name = binding.edtName.text.toString()
-        val bookPref = binding.edtBookPreference.text.toString()
+        val name = binding.edtName.text.toString().trim()
+        val bookPref = selectedCategories.joinToString(", ")
         val uid = auth.currentUser?.uid ?: return
 
         val updates = mapOf(
@@ -150,3 +183,4 @@ class EditProfileFragment : Fragment() {
         }
     }
 }
+

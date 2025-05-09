@@ -98,6 +98,17 @@
              />
     </fragment>
 
+    <fragment
+        android:id="@+id/favorite"
+        android:name="com.example.bookapp.fragments.FavoriteBooksFragment"
+        android:label="Favorite"
+        tools:layout="@layout/fragment_favorite_books">
+        <action
+            android:id="@+id/action_favorite_to_bookDetailFragment"
+            app:destination="@id/bookDetailFragment"
+            />
+    </fragment>
+
     <!-- Hồ sơ -->
     <fragment
         android:id="@+id/nav_profile"
@@ -112,6 +123,9 @@
         <action
             android:id="@+id/action_nav_profile_to_editProfileFragment"
             app:destination="@id/editProfileFragment" />
+        <action
+            android:id="@+id/action_nav_profile_to_favoriteBooksFragment"
+            app:destination="@id/favorite" />
     </fragment>
 
     <!-- Chỉnh sửa hồ sơ -->

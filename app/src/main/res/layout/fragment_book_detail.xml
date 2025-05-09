@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    >
+    android:background="#D4E9FB"
+    android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -30,11 +30,24 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:text="Book Title"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/favoriteButton"
             app:layout_constraintStart_toEndOf="@id/bookThumbnail"
             app:layout_constraintTop_toTopOf="@id/bookThumbnail" />
 
-        <!-- Danh sách thông tin dạng bullet points -->
+        <!-- Nút yêu thích (biểu tượng trái tim) -->
+        <ImageButton
+            android:id="@+id/favoriteButton"
+            android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginEnd="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Add to Favorites"
+        android:src="@drawable/ic_heart_border"
+        android:scaleType="centerInside"
+        android:padding="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/bookThumbnail" />
+
         <!-- Tác giả -->
         <TextView
             android:id="@+id/bookAuthors"
@@ -95,7 +108,7 @@
             app:layout_constraintStart_toStartOf="@id/bookCategories"
             app:layout_constraintTop_toBottomOf="@id/bookCategories" />
 
-        <!-- Xếp hạng (RatingBar + Rating Count, không có label) -->
+        <!-- Xếp hạng (RatingBar + Rating Count) -->
         <RatingBar
             android:id="@+id/bookAverageRating"
             android:layout_width="wrap_content"

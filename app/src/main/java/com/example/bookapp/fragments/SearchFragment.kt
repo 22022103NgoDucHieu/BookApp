@@ -35,7 +35,8 @@ import retrofit2.Response
 class SearchFragment : Fragment() {
 
     private val TAG = "SearchFragment"
-    private lateinit var binding: FragmentSearchBinding
+    private var _binding: FragmentSearchBinding? = null
+    private val binding get() = _binding!!
     private lateinit var navController: NavController
 
     private lateinit var categoryAdapter: CategoryAdapter
@@ -56,7 +57,7 @@ class SearchFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentSearchBinding.inflate(inflater, container, false)
+        _binding = FragmentSearchBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -99,7 +100,7 @@ class SearchFragment : Fragment() {
                 currentQuery = query
                 resetAndSearchFromApi(query, selectedCategories)
             } else {
-                Toast.makeText(context, "Vui lòng nhập từ khóa tìm kiếm", Toast.LENGTH_SHORT).show()
+                showToast("Vui lòng nhập từ khóa tìm kiếm")
             }
         }
 
@@ -149,7 +150,7 @@ class SearchFragment : Fragment() {
             }
         }
         binding.categoriesRecyclerView.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
             adapter = categoryAdapter
         }
     }
@@ -162,9 +163,9 @@ class SearchFragment : Fragment() {
             navController.navigate(R.id.action_searchFragment_to_bookDetailFragment, bundle)
         }
         binding.searchResultsRecyclerView.apply {
-            layoutManager = GridLayoutManager(context, 2)
+            layoutManager = GridLayoutManager(requireContext(), 2)
             adapter = searchResultsAdapter
-            addItemDecoration(GridSpacingItemDecoration(2, 140, true))
+            addItemDecoration(GridSpacingItemDecoration(2, 210, true))
         }
     }
 
@@ -287,10 +288,10 @@ class SearchFragment : Fragment() {
             Log.d(TAG, "Đã hiển thị ${booksToAdd.size} sách, tổng số hiển thị: ${searchResultsList.size}")
         } else {
             if (searchResultsList.isEmpty()) {
-                Toast.makeText(context, "Không tìm thấy sách nào cho từ khóa: $currentQuery", Toast.LENGTH_SHORT).show()
+                showToast("Không tìm thấy sách nào cho từ khóa: $currentQuery")
                 binding.searchResultsTitle.visibility = View.GONE
             } else {
-                Toast.makeText(context, "Không còn sách để tải thêm", Toast.LENGTH_SHORT).show()
+                showToast("Không còn sách để tải thêm")
             }
             binding.loadMoreButton.visibility = View.GONE
         }
@@ -337,26 +338,26 @@ class SearchFragment : Fragment() {
                 if (response.isSuccessful) {
                     val googleBooksResponse = response.body()
                     val items = googleBooksResponse?.items ?: emptyList()
-                    handleGoogleBooksResponse(items)
+                    handleGoogleBooksResponse(items, selectedCategories) // Truyền selectedCategories
                 } else {
                     binding.loadMoreProgress.visibility = View.GONE
-                    Toast.makeText(context, "Lỗi khi tìm kiếm sách: ${response.message()}", Toast.LENGTH_SHORT).show()
+                    showToast("Lỗi khi tìm kiếm sách: ${response.message()}")
                     Log.e(TAG, "Lỗi Google Books API: ${response.message()}")
                 }
             }
 
             override fun onFailure(call: Call<GoogleBooksResponse>, t: Throwable) {
                 binding.loadMoreProgress.visibility = View.GONE
-                Toast.makeText(context, "Lỗi khi tìm kiếm sách: ${t.message}", Toast.LENGTH_SHORT).show()
+                showToast("Lỗi khi tìm kiếm sách: ${t.message}")
                 Log.e(TAG, "Lỗi Google Books API: ${t.message}")
             }
         })
     }
 
-    private fun handleGoogleBooksResponse(items: List<BookItem>) {
+    private fun handleGoogleBooksResponse(items: List<BookItem>, selectedCategories: List<String>) {
         if (items.isEmpty()) {
             binding.loadMoreProgress.visibility = View.GONE
-            Toast.makeText(context, "Không tìm thấy sách nào", Toast.LENGTH_SHORT).show()
+            showToast("Không tìm thấy sách nào")
             binding.searchResultsTitle.visibility = View.GONE
             return
         }
@@ -393,7 +394,7 @@ class SearchFragment : Fragment() {
             bookItem to (bookItem.volumeInfo.categories ?: emptyList())
         }
 
-        checkAndAddBooksToFirebase(tempBooks, bookItemsWithCategories) {
+        checkAndAddBooksToFirebase(tempBooks, bookItemsWithCategories, selectedCategories) {
             binding.loadMoreProgress.visibility = View.GONE
 
             hasMoreBooks = tempBooks.size == booksPerPage
@@ -407,7 +408,7 @@ class SearchFragment : Fragment() {
                 binding.loadMoreButton.visibility = View.VISIBLE
             } else {
                 binding.loadMoreButton.visibility = View.GONE
-                Toast.makeText(context, "Không còn sách để tải thêm", Toast.LENGTH_SHORT).show()
+                showToast("Không còn sách để tải thêm")
             }
 
             Log.d(TAG, "Đã tải ${tempBooks.size} sách từ API, tổng số hiển thị: ${searchResultsList.size}")
@@ -426,13 +427,14 @@ class SearchFragment : Fragment() {
             categoryLower.contains("science") || categoryLower.contains("mathematics") || categoryLower.contains("physics") -> "Science"
             categoryLower.contains("art") || categoryLower.contains("design") || categoryLower.contains("photography") -> "Art"
             categoryLower.contains("novel") || categoryLower.contains("literary fiction") -> "Novel"
-            else -> null // Nếu không khớp với thể loại nào, trả về null
+            else -> null
         }
     }
 
     private fun checkAndAddBooksToFirebase(
         books: List<Book>,
         bookItemsWithCategories: List<Pair<BookItem, List<String>>>,
+        selectedCategories: List<String>, // Thêm tham số selectedCategories
         onComplete: () -> Unit
     ) {
         val booksRef = FirebaseDatabase.getInstance("https://bookapp-6d5d8-default-rtdb.asia-southeast1.firebasedatabase.app")
@@ -451,12 +453,9 @@ class SearchFragment : Fragment() {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (!snapshot.exists()) {
                         booksRef.child(book.id).setValue(book)
-                        val bookCategories = bookItemsWithCategories[index].second
-                        bookCategories.forEach { apiCategory ->
-                            val mappedCategory = mapCategory(apiCategory)
-                            if (mappedCategory != null) {
-                                categoriesRef.child(mappedCategory).child(book.id).setValue(true)
-                            }
+                        // Thêm book.id vào tất cả các thể loại trong selectedCategories
+                        selectedCategories.forEach { category ->
+                            categoriesRef.child(category).child(book.id).setValue(true)
                         }
                         firebaseBooks.add(book)
                     }
@@ -476,5 +475,20 @@ class SearchFragment : Fragment() {
                 }
             })
         }
+    }
+
+    private fun showToast(message: String) {
+        if (isAdded && context != null) {
+            activity?.runOnUiThread {
+                Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+            }
+        } else {
+            Log.w(TAG, "Cannot show Toast: Fragment not attached or context is null")
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

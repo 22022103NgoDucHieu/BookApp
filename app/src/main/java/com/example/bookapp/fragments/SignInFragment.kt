@@ -52,7 +52,7 @@ class SignInFragment : Fragment() {
             if (email.isNotEmpty() && pass.isNotEmpty())
                 loginUser(email, pass)
             else
-                Toast.makeText(context, "Empty fields are not allowed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show()
         }
 
         // Google Sign-In click
@@ -116,7 +116,7 @@ class SignInFragment : Fragment() {
                 val account = task.getResult(ApiException::class.java)
                 firebaseAuthWithGoogle(account)
             } catch (e: ApiException) {
-                Toast.makeText(requireContext(), "Google sign in failed: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Đăng nhập bằng Google thất bại: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -128,7 +128,7 @@ class SignInFragment : Fragment() {
                 if (task.isSuccessful) {
                     navController.navigate(R.id.action_signInFragment_to_homeFragment)
                 } else {
-                    Toast.makeText(requireContext(), "Google login failed", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), "Đăng nhập bằng Google thất bại", Toast.LENGTH_SHORT).show()
                 }
             }
     }

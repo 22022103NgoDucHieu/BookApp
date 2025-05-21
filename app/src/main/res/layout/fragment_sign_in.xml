@@ -154,12 +154,6 @@
             android:layout_width="16dp"
             android:layout_height="wrap_content" />
 
-        <ImageView
-            android:id="@+id/ivFacebook"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:contentDescription="Facebook Sign In"
-            android:src="@drawable/facebook" />
     </LinearLayout>
 
     <TextView

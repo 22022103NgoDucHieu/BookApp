@@ -54,10 +54,10 @@ class SignUpFragment : Fragment() {
                     registerUser(email, pass)
 
                 } else {
-                    Toast.makeText(context, "Password is not same", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Mật khẩu không trùng khơp", Toast.LENGTH_SHORT).show()
                 }
             } else
-                Toast.makeText(context, "Empty fields are not allowed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Vui lòng nhập đầy đủ thông tin", Toast.LENGTH_SHORT).show()
         }
 
     }
@@ -85,11 +85,11 @@ class SignUpFragment : Fragment() {
                             navController.navigate(R.id.action_signUpFragment_to_homeFragment)
                         }
                         .addOnFailureListener { e ->
-                            Toast.makeText(context, "Failed to save user data: ${e.message}", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "Lỗi khi lưu dữ liệu: ${e.message}", Toast.LENGTH_SHORT).show()
                         }
                 }
             } else {
-                Toast.makeText(context, task.exception?.message ?: "Registration failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, task.exception?.message ?: "Đăng ký thất ba", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -83,7 +83,7 @@
                         android:drawableStart="@drawable/saved_icon"
                         android:drawablePadding="20dp"
                         android:paddingStart="20dp"
-                        android:text="Sách đã lưu"
+                        android:text="Sách yêu thích"
                         android:textAlignment="viewStart"
                         android:textSize="18sp"
                         android:textStyle="bold" />

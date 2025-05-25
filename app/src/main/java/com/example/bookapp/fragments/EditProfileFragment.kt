@@ -20,6 +20,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
 import com.squareup.picasso.Picasso
+import android.content.pm.PackageManager
+import android.Manifest
 
 class EditProfileFragment : Fragment() {
 
@@ -32,6 +34,8 @@ class EditProfileFragment : Fragment() {
 
     private var imageUri: Uri? = null
     private val PICK_IMAGE_REQUEST = 1001
+    private val PERMISSION_REQUEST_CODE = 1002
+
     private lateinit var categoryAdapter: CategoryAdapter
     private val categories: MutableList<Category> = mutableListOf()
     private val selectedCategories: MutableList<String> = mutableListOf()
@@ -145,7 +149,7 @@ class EditProfileFragment : Fragment() {
 
         fileRef.putFile(imageUri!!)
             .continueWithTask { task ->
-                if (!task.isSuccessful) throw task.exception ?: Exception("Upload failed")
+                if (!task.isSuccessful) throw task.exception ?: Exception("Lỗi upload ảnh")
                 fileRef.downloadUrl
             }.addOnSuccessListener { uri ->
                 database.child("avatarUrl").setValue(uri.toString())
@@ -156,8 +160,33 @@ class EditProfileFragment : Fragment() {
     }
 
     private fun openGallery() {
+        if (requireContext().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            pickImageFromGallery()
+        } else {
+            requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), PERMISSION_REQUEST_CODE)
+        }
+    }
+
+    private fun pickImageFromGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(intent, PICK_IMAGE_REQUEST)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                pickImageFromGallery()
+            } else {
+                Toast.makeText(requireContext(), "Bạn cần cấp quyền để chọn ảnh!", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -183,4 +212,3 @@ class EditProfileFragment : Fragment() {
         }
     }
 }
-

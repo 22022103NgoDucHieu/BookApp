@@ -51,17 +51,18 @@
             app:srcCompat="@drawable/ic_3" />
 
         <!-- Nút đổi ảnh -->
+
+        <!-- Label: Tên hiển thị -->
         <Button
             android:id="@+id/btnChangePicture"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:text="Đổi ảnh"
-            app:layout_constraintTop_toBottomOf="@id/imageAvatar"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="8dp" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/imageAvatar" />
 
-        <!-- Label: Tên hiển thị -->
         <TextView
             android:id="@+id/labelDisplayName"
             android:layout_width="wrap_content"
